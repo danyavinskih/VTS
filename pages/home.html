@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VTS — Главная</title>
+<style>
+:root{
+  --bg:#041124;--panel:#071a33;--panel2:#092342;--line:#123e70;
+  --blue:#087cff;--blue2:#39a1ff;--text:#edf5ff;--muted:#91b1d9;
+  --green:#00d5a0;--gold:#ffc34d;--red:#ff6175;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 55% -15%,#123b70 0%,var(--bg) 48%);color:var(--text);font:14px/1.45 "Segoe UI",Arial,sans-serif}
+button,a{font:inherit}a{color:inherit;text-decoration:none}button{cursor:pointer}
+.app{min-height:100vh;display:grid;grid-template-columns:202px minmax(0,1fr)}
+.sidebar{background:rgba(2,12,27,.96);border-right:1px solid #153b65;display:flex;flex-direction:column;min-height:100vh;position:sticky;top:0;height:100vh}
+.brand{padding:22px 20px 24px;border-bottom:1px solid #123354}
+.brand-mark{font-size:31px;font-weight:900;letter-spacing:1px;color:#48aaff;font-style:italic}
+.brand-sub{font-size:9px;letter-spacing:1.5px;color:#8eb9e9;margin-top:2px}
+.nav{padding:18px 12px;display:grid;gap:7px}
+.nav a{display:flex;align-items:center;gap:13px;padding:12px 13px;border-radius:10px;color:#a9c5e8;font-weight:650;transition:.15s}
+.nav a:hover{background:#0b2444;color:#fff}
+.nav a.active{background:linear-gradient(100deg,#087cff,#083b78);color:white;box-shadow:inset 3px 0 #4bb7ff}
+.nav-icon{width:23px;text-align:center;font-size:19px}
+.sidebar-bottom{margin-top:auto;padding:18px 20px;color:#789bc6;font-size:11px;border-top:1px solid #102e50}
+.main{min-width:0}
+.topbar{height:72px;display:flex;align-items:center;justify-content:flex-end;gap:22px;padding:0 26px;border-bottom:1px solid #14375d;background:rgba(3,14,29,.78)}
+.top-status{color:var(--green);font-size:12px;white-space:nowrap}
+.profile-chip{display:flex;align-items:center;gap:10px;border-left:1px solid #15395e;padding-left:20px}
+.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#137eff,#0a315a);border:1px solid #3caaff;font-size:17px;font-weight:800;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.profile-chip strong{display:block;font-size:13px}.profile-chip small{display:block;color:var(--muted);font-size:11px}
+.content{padding:20px 22px 28px;max-width:1800px;margin:auto}
+.welcome{position:relative;overflow:hidden;min-height:196px;border:1px solid #1a5792;border-radius:14px;background:linear-gradient(90deg,rgba(3,17,38,.98) 0%,rgba(4,23,49,.86) 45%,rgba(4,20,42,.65) 100%),linear-gradient(125deg,#0d3765,#06162b 60%,#102f52);display:flex;align-items:center;padding:26px 30px;margin-bottom:13px}
+.welcome:before{content:"VTS";position:absolute;right:10%;bottom:-42px;font-size:190px;font-weight:900;letter-spacing:-10px;color:rgba(49,136,220,.08);font-style:italic;pointer-events:none}
+.welcome:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(3,15,33,.08) 45%,rgba(3,15,33,.3) 100%);pointer-events:none}
+.welcome-copy{position:relative;z-index:1;max-width:530px}
+.eyebrow{color:#a6c8f1;font-size:15px}.welcome h1{font-size:48px;line-height:1;margin:3px 0;color:white;letter-spacing:-1px}
+.welcome p{color:#b9d1f0;margin:9px 0 16px}
+.primary{border:0;border-radius:9px;background:linear-gradient(135deg,#1491ff,#0755e9);color:white;padding:12px 17px;font-weight:750;box-shadow:0 5px 20px #006dff33}
+.primary:hover{filter:brightness(1.12)}
+.quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:13px}
+.quick{display:flex;align-items:center;gap:13px;padding:13px;background:linear-gradient(135deg,#071a33,#06162a);border:1px solid #143e6c;border-radius:10px;min-height:68px;transition:.15s}
+.quick:hover{border-color:#258dff;transform:translateY(-1px)}
+.quick-icon{width:42px;height:42px;flex:none;display:grid;place-items:center;border-radius:10px;background:linear-gradient(135deg,#1266b8,#092a55);font-size:21px}
+.quick strong{display:block;font-size:13px}.quick small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.dashboard{display:grid;grid-template-columns:1.03fr 1fr .82fr;gap:13px;align-items:start}
+.column{display:grid;gap:12px;min-width:0}
+.panel{background:linear-gradient(145deg,rgba(7,26,51,.98),rgba(4,18,36,.98));border:1px solid #143e6c;border-radius:12px;overflow:hidden;min-width:0}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 14px;border-bottom:1px solid #123354}
+.panel-title{font-size:14px;font-weight:800;display:flex;align-items:center;gap:9px}
+.panel-title span{font-size:18px}
+.link{font-size:11px;color:#39a1ff;white-space:nowrap}
+.news-list{padding:0 13px}
+.news-item{display:grid;grid-template-columns:86px minmax(0,1fr);gap:11px;padding:12px 0;border-bottom:1px solid #102f51}
+.news-item:last-child{border-bottom:0}
+.news-thumb{height:67px;border-radius:7px;background:linear-gradient(140deg,#164f86,#08182c);display:grid;place-items:center;font-size:27px;border:1px solid #174879}
+.news-item h3{font-size:12px;margin:0 0 4px}.news-item p{font-size:10px;color:#a4bfdf;margin:0 0 5px}.news-item time{font-size:10px;color:#7599c5}
+.stats-toggle{display:flex;gap:3px;background:#041328;border:1px solid #123b67;padding:3px;border-radius:8px}
+.stats-toggle button{border:0;border-radius:6px;padding:6px 10px;color:#a9c4e4;background:transparent;font-size:11px}
+.stats-toggle button.active{background:#087cff;color:#fff}
+.stats-grid{padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.stat-card{padding:12px 10px;border:1px solid #153e6c;border-radius:9px;display:flex;gap:10px;align-items:center;min-width:0;background:#06172d}
+.stat-icon{width:36px;height:36px;flex:none;border-radius:50%;background:#0c3260;display:grid;place-items:center;font-size:18px}
+.stat-label{font-size:10px;color:#a0bee3}.stat-value{font-size:16px;font-weight:800;margin-top:2px;white-space:nowrap}
+.stat-delta{font-size:10px;color:var(--green);margin-top:3px}
+.chart-wrap{padding:12px 13px 10px}
+.chart-title{font-weight:750;font-size:12px;margin-bottom:8px}
+.chart{height:112px;width:100%;display:block}
+.chart-labels{display:flex;justify-content:space-between;color:#85a7d1;font-size:9px}
+.current-trip{display:flex;align-items:center;gap:12px;padding:12px}
+.trip-art{width:76px;height:58px;border-radius:8px;background:linear-gradient(135deg,#164d7c,#08172a);display:grid;place-items:center;font-size:27px;flex:none}
+.trip-info{min-width:0;flex:1}.trip-info strong{display:block;font-size:12px}.trip-info small{color:#91b1d9;font-size:10px;display:block;margin-top:3px}
+.trip-meta{display:flex;gap:14px;flex-wrap:wrap;color:#91b1d9;font-size:10px;margin-top:7px}
+.achievement{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #102f51}
+.achievement:last-child{border-bottom:0}
+.ach-icon{width:37px;height:37px;border-radius:50%;display:grid;place-items:center;flex:none;font-size:18px;background:#123c6b;border:1px solid #2367a3}
+.achievement strong{display:block;font-size:11px}.achievement small{display:block;color:#93b3da;font-size:10px}
+.ach-lock{margin-left:auto;color:#7599c5}
+.recent-list{padding:0 12px}
+.recent-item{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid #102f51}
+.recent-item:last-child{border-bottom:0}
+.recent-thumb{width:43px;height:34px;display:grid;place-items:center;border-radius:6px;background:#12385f;font-size:17px;flex:none}
+.recent-info{min-width:0;flex:1}.recent-info strong{display:block;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.recent-info small{display:block;color:#83a7d3;font-size:9px}
+.money{font-size:10px;font-weight:800;white-space:nowrap}
+.status-pill{font-size:9px;color:#00e0a4;background:#063b35;border:1px solid #08735d;border-radius:20px;padding:4px 7px;white-space:nowrap}
+.promo{display:flex;align-items:center;gap:10px;padding:13px;background:linear-gradient(115deg,#123f69,#07182e)}
+.promo strong{font-size:12px}.promo p{font-size:10px;color:#a7c5e8;margin:4px 0 0}
+.footer{display:flex;gap:20px;align-items:center;flex-wrap:wrap;padding:14px 5px 0;margin-top:15px;border-top:1px solid #14375c;color:#789bc6;font-size:10px}
+.empty{padding:16px 13px;color:#86a9d4;font-size:12px}
+.notice{position:fixed;right:20px;bottom:20px;background:#0a2c50;border:1px solid #2382ce;border-radius:10px;padding:12px 16px;box-shadow:0 12px 35px #0008;z-index:10;max-width:320px;display:none}
+@media(max-width:1200px){.dashboard{grid-template-columns:1fr 1fr}.dashboard>.column:last-child{grid-column:1/-1;grid-template-columns:1fr 1fr}.quick-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto;min-height:0}.brand{padding:12px 16px}.brand-mark{font-size:24px}.brand-sub{display:none}.nav{display:flex;overflow:auto;padding:8px;gap:5px}.nav a{white-space:nowrap;padding:9px 11px;font-size:12px}.nav-icon{font-size:16px;width:auto}.sidebar-bottom{display:none}.topbar{height:58px;padding:0 14px}.content{padding:12px}.welcome{min-height:175px;padding:20px}.welcome h1{font-size:40px}.quick-grid{grid-template-columns:1fr 1fr;gap:8px}.quick{padding:10px;gap:8px}.quick-icon{width:34px;height:34px;font-size:17px}.dashboard{grid-template-columns:1fr}.dashboard>.column:last-child{grid-column:auto;grid-template-columns:1fr}.panel-head{padding:11px}.news-item{grid-template-columns:72px minmax(0,1fr)}.news-thumb{height:60px}.footer{gap:10px}}
+@media(max-width:420px){.quick-grid{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr 1fr}.stat-card{padding:9px 7px;gap:7px}.stat-icon{width:30px;height:30px;font-size:15px}.stat-value{font-size:14px}.welcome h1{font-size:34px}.profile-chip{padding-left:10px;gap:7px}.topbar{gap:10px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <a class="brand" href="../index.html" aria-label="VTS главная">
+      <div class="brand-mark">〰 VTS</div>
+      <div class="brand-sub">VIRTUAL TRANSPORT SYSTEM</div>
+    </a>
+    <nav class="nav" aria-label="Главное меню">
+      <a class="active" href="home.html"><span class="nav-icon">⌂</span>Главная</a>
+      <a href="trips.html"><span class="nav-icon">🚚</span>Рейсы</a>
+      <a href="map.html"><span class="nav-icon">◇</span>Карта</a>
+      <a href="garage.html"><span class="nav-icon">▣</span>Гараж</a>
+      <a href="profile.html"><span class="nav-icon">♟</span>Профиль</a>
+      <a href="settings.html"><span class="nav-icon">⚙</span>Настройки</a>
+    </nav>
+    <div class="sidebar-bottom">VTS — Virtual Transport System<br>Персональная карьера водителя<br><br>Версия 1.0.0</div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <span title="Уведомления">♧</span>
+      <span class="top-status">● Онлайн</span>
+      <a class="profile-chip" href="profile.html">
+        <div class="avatar" id="topAvatar">В</div>
+        <div><strong id="driverNameTop">Новый водитель</strong><small id="driverRoleTop">Водитель-дальнобойщик</small></div>
+      </a>
+    </header>
+
+    <div class="content">
+      <section class="welcome">
+        <div class="welcome-copy">
+          <div class="eyebrow">Добро пожаловать в</div>
+          <h1>VTS</h1>
+          <p>Реальные дороги. Настоящие эмоции.</p>
+          <a class="primary" href="trips.html">▶ &nbsp; Начать рейс &nbsp; →</a>
+        </div>
+      </section>
+
+      <section class="quick-grid" aria-label="Быстрые действия">
+        <a class="quick" href="trips.html"><div class="quick-icon">▶</div><div><strong>Быстрый старт</strong><small>Начать новый рейс</small></div></a>
+        <a class="quick" href="trips.html"><div class="quick-icon">▦</div><div><strong>Выбор груза</strong><small>Доступные заказы</small></div></a>
+        <a class="quick" href="map.html"><div class="quick-icon">◧</div><div><strong>Карта мира</strong><small>Открыть карту</small></div></a>
+        <a class="quick" href="garage.html"><div class="quick-icon">▣</div><div><strong>Мой гараж</strong><small>Техника и прицепы</small></div></a>
+      </section>
+
+      <section class="dashboard">
+        <div class="column">
+          <article class="panel">
+            <div class="panel-head"><div class="panel-title"><span>▣</span>Последние новости</div><a class="link" href="#" id="allNews">Все новости →</a></div>
+            <div class="news-list" id="newsList"></div>
+          </article>
+        </div>
+
+        <div class="column">
+          <article class="panel">
+            <div class="panel-head">
+              <div class="panel-title"><span>▥</span>Статистика за сегодня и вчера</div>
+              <div class="stats-toggle"><button class="active" data-period="today">Сегодня</button><button data-period="yesterday">Вчера</button></div>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-card"><div class="stat-icon">🛣</div><div><div class="stat-label">Пробег (км)</div><div class="stat-value" id="distanceValue">0 км</div><div class="stat-delta" id="distanceDelta">За выбранный день</div></div></div>
+              <div class="stat-card"><div class="stat-icon">₽</div><div><div class="stat-label">Доход (₽)</div><div class="stat-value" id="incomeValue">0 ₽</div><div class="stat-delta" id="incomeDelta">За выбранный день</div></div></div>
+              <div class="stat-card"><div class="stat-icon">🚚</div><div><div class="stat-label">Выполнено рейсов</div><div class="stat-value" id="tripsValue">0 рейсов</div><div class="stat-delta">Завершённые рейсы</div></div></div>
+              <div class="stat-card"><div class="stat-icon">★</div><div><div class="stat-label">Средний рейтинг</div><div class="stat-value" id="ratingValue">—</div><div class="stat-delta">По данным карьеры</div></div></div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head"><div class="panel-title"><span>▥</span>График дохода за 7 дней</div><span class="link">₽ Доход</span></div>
+            <div class="chart-wrap"><div class="chart-title">Доход по завершённым рейсам</div><svg class="chart" id="incomeChart" viewBox="0 0 440 120" preserveAspectRatio="none" role="img" aria-label="График дохода за семь дней"></svg><div class="chart-labels" id="chartLabels"></div></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head"><div class="panel-title"><span>🚚</span>Текущий рейс</div><a class="link" href="trips.html">Открыть →</a></div>
+            <div id="currentTrip"><div class="empty">Сейчас нет активного рейса. Можно выбрать новый заказ.</div></div>
+          </article>
+        </div>
+
+        <div class="column">
+          <article class="panel">
+            <div class="panel-head"><div class="panel-title"><span>🏆</span>Достижения</div><a class="link" href="profile.html">Все →</a></div>
+            <div id="achievementList"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head"><div class="panel-title"><span>🚚</span>Последние рейсы</div><a class="link" href="trips.html">Все →</a></div>
+            <div class="recent-list" id="recentTrips"></div>
+          </article>
+
+          <article class="panel promo"><div style="font-size:30px">🌄</div><div><strong>Вперёд к новым горизонтам!</strong><p>Каждый рейс — новый опыт, новые города и новые достижения. Твоя карьера продолжается.</p></div></article>
+        </div>
+      </section>
+
+      <footer class="footer"><span>◉ VTS</span><span>Мир: Европа</span><span id="footerTime">Время: —</span><span id="footerDate">Дата: —</span><span style="margin-left:auto">VTS — больше, чем просто работа.</span></footer>
+    </div>
+  </main>
+</div>
+<div class="notice" id="notice"></div>
+
+<script>
+(() => {
+  'use strict';
+  const STORAGE_KEY = 'vts_data_v1';
+  const PROFILE_KEY = 'vts_profile_v1';
+  const $ = id => document.getElementById(id);
+  const safeParse = value => { try { return JSON.parse(value); } catch (_) { return null; } };
+  const readObject = key => safeParse(localStorage.getItem(key)) || {};
+  const mainData = readObject(STORAGE_KEY);
+  const profileData = readObject(PROFILE_KEY);
+  const profile = Object.assign({}, mainData.profile || {}, profileData || {});
+  const trips = Array.isArray(mainData.trips) ? mainData.trips : (Array.isArray(mainData.orders) ? mainData.orders : []);
+  const money = n => new Intl.NumberFormat('ru-RU', {style:'currency',currency:'RUB',maximumFractionDigits:0}).format(Number(n)||0);
+  const number = n => new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Number(n)||0);
+  const text = (value, fallback='—') => value == null || String(value).trim()==='' ? fallback : String(value);
+  const first = (obj, keys, fallback=0) => {
+    for (const key of keys) if (obj && obj[key] != null && obj[key] !== '') {
+      const value = Number(String(obj[key]).replace(/[^\d,.-]/g,'').replace(',','.'));
+      if (Number.isFinite(value)) return value;
+    }
+    return fallback;
+  };
+  const dateOf = trip => {
+    const raw = trip && (trip.date || trip.completedAt || trip.finishedAt || trip.createdAt || trip.created_at || trip.deliveryDate || trip.timestamp);
+    if (!raw) return null;
+    const date = new Date(raw);
+    return Number.isNaN(date.getTime()) ? null : date;
+  };
+  const isDone = trip => {
+    const status = String(trip.status || trip.state || '').toLowerCase();
+    return trip.completed === true || ['completed','complete','done','finished','успешно','завершён','завершен','выполнен','выполнен успешно'].some(s => status.includes(s));
+  };
+  const distanceOf = trip => first(trip,['distance','km','kilometers','routeDistance','mileage'],0);
+  const incomeOf = trip => first(trip,['earnings','reward','payment','price','income','profit','salary'],0);
+  const doneTrips = trips.filter(isDone);
+  const now = new Date();
+  const sameDay = (a,b) => a && a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+  const todayTrips = doneTrips.filter(t => sameDay(dateOf(t),now));
+  const yesterday = new Date(now); yesterday.setDate(now.getDate()-1);
+  const yesterdayTrips = doneTrips.filter(t => sameDay(dateOf(t),yesterday));
+  let period = 'today';
+
+  function showNotice(message) {
+    const el = $('notice'); el.textContent = message; el.style.display='block';
+    clearTimeout(showNotice.timer); showNotice.timer=setTimeout(()=>el.style.display='none',3200);
+  }
+  function initials(name) {
+    const parts=String(name||'Новый водитель').trim().split(/\s+/).filter(Boolean);
+    return parts.slice(0,2).map(p=>p[0]).join('').toUpperCase() || 'В';
+  }
+  const driverName = text(profile.name || profile.fullName || profile.nickname,'Новый водитель');
+  $('driverNameTop').textContent=driverName;
+  $('driverRoleTop').textContent=text(profile.position || profile.role,'Водитель-дальнобойщик');
+  const avatarData = profile.avatarData || profile.avatar || '';
+  if (typeof avatarData === 'string' && avatarData.startsWith('data:image/')) $('topAvatar').innerHTML='<img alt="Аватар водителя" src="'+avatarData.replace(/"/g,'&quot;')+'">';
+  else $('topAvatar').textContent=initials(driverName);
+
+  function renderNews() {
+    const news=[
+      {icon:'🚛',title:'Добро пожаловать!',tag:'Новости',desc:'VTS готов сопровождать твою личную карьеру водителя.',date:'VTS'},
+      {icon:'🌄',title:'Новые горизонты',tag:'Маршруты',desc:'Выбирай заказы, открывай новые дороги и пополняй историю рейсов.',date:'Карьерный журнал'},
+      {icon:'🧭',title:'Планируй маршрут',tag:'Совет',desc:'Следи за пробегом и доходом, чтобы видеть развитие своей карьеры.',date:'Совет водителю'}
+    ];
+    $('newsList').innerHTML=news.map(n=>`<article class="news-item"><div class="news-thumb">${n.icon}</div><div><h3>${n.title} <span style="font-size:9px;color:#55b4ff;font-weight:500">${n.tag}</span></h3><p>${n.desc}</p><time>${n.date}</time></div></article>`).join('');
+  }
+  function renderStats(which) {
+    const selected = which==='today'?todayTrips:yesterdayTrips;
+    const distance=selected.reduce((sum,t)=>sum+distanceOf(t),0);
+    const income=selected.reduce((sum,t)=>sum+incomeOf(t),0);
+    $('distanceValue').textContent=number(distance)+' км';
+    $('incomeValue').textContent=money(income);
+    $('tripsValue').textContent=selected.length+' '+(selected.length===1?'рейс':'рейсов');
+    $('ratingValue').textContent=doneTrips.length ? (Math.min(5,4+doneTrips.length/20)).toFixed(1) : '—';
+    $('distanceDelta').textContent='За '+(which==='today'?'сегодня':'вчера');
+    $('incomeDelta').textContent='За '+(which==='today'?'сегодня':'вчера');
+    document.querySelectorAll('[data-period]').forEach(b=>b.classList.toggle('active',b.dataset.period===which));
+  }
+  document.querySelectorAll('[data-period]').forEach(button=>button.addEventListener('click',()=>{period=button.dataset.period;renderStats(period)}));
+
+  function renderChart() {
+    const days=[];
+    for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(now.getDate()-i);const value=doneTrips.filter(t=>sameDay(dateOf(t),d)).reduce((sum,t)=>sum+incomeOf(t),0);days.push({date:d,value});}
+    const max=Math.max(1,...days.map(d=>d.value));
+    const bars=days.map((d,i)=>{
+      const h=Math.max(2,d.value/max*78);const x=18+i*59;const y=94-h;
+      return `<line x1="8" y1="${y+ h}" x2="432" y2="${y+h}" stroke="#102d4c" stroke-width="1"/><rect x="${x}" y="${y}" width="28" height="${h}" rx="3" fill="#087cff" opacity=".88"><title>${d.date.toLocaleDateString('ru-RU')}: ${money(d.value)}</title></rect>`;
+    }).join('');
+    $('incomeChart').innerHTML=`<line x1="8" y1="94" x2="432" y2="94" stroke="#24466b"/>${bars}`;
+    $('chartLabels').innerHTML=days.map(d=>`<span>${d.date.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'})}</span>`).join('');
+  }
+  function renderRecent() {
+    const list=doneTrips.slice().sort((a,b)=>(dateOf(b)||0)-(dateOf(a)||0)).slice(0,4);
+    $('recentTrips').innerHTML=list.length?list.map(t=>{
+      const from=text(t.from||t.origin||t.startCity,'Город отправления');
+      const to=text(t.to||t.destination||t.endCity,'Город назначения');
+      const date=dateOf(t);
+      return `<div class="recent-item"><div class="recent-thumb">🚚</div><div class="recent-info"><strong>${from} → ${to}</strong><small>${date?date.toLocaleDateString('ru-RU'):'Дата не указана'}</small></div><div class="money">${money(incomeOf(t))}</div></div>`;
+    }).join(''):'<div class="empty">Пока нет завершённых рейсов.</div>';
+  }
+  function renderAchievements() {
+    const definitions=[
+      {icon:'🛣',title:'Первые 1 000 км',desc:'Проехать 1 000 км',test:doneTrips.reduce((s,t)=>s+distanceOf(t),0)>=1000},
+      {icon:'🚚',title:'Мастер дорог',desc:'Выполнить 10 рейсов',test:doneTrips.length>=10},
+      {icon:'🌍',title:'Дальнобойщик',desc:'Выполнить 25 рейсов',test:doneTrips.length>=25},
+      {icon:'💰',title:'Первый доход',desc:'Заработать 10 000 ₽',test:doneTrips.reduce((s,t)=>s+incomeOf(t),0)>=10000}
+    ];
+    $('achievementList').innerHTML=definitions.map(a=>`<div class="achievement"><div class="ach-icon">${a.icon}</div><div><strong>${a.title}</strong><small>${a.desc}</small></div><span class="ach-lock">${a.test?'✓':'◇'}</span></div>`).join('');
+  }
+  function renderCurrentTrip() {
+    const active=trips.find(t=>!isDone(t) && ['active','in_progress','in progress','в пути','активен','выполняется'].includes(String(t.status||t.state||'').toLowerCase()));
+    if(!active){$('currentTrip').innerHTML='<div class="empty">Сейчас нет активного рейса. Можно выбрать новый заказ.</div>';return;}
+    $('currentTrip').innerHTML=`<div class="current-trip"><div class="trip-art">🚛</div><div class="trip-info"><strong>${text(active.from||active.origin,'Отправление')} → ${text(active.to||active.destination,'Назначение')}</strong><small>${text(active.cargo||active.freight,'Груз не указан')}</small><div class="trip-meta"><span>Пробег: ${number(distanceOf(active))} км</span><span>Оплата: ${money(incomeOf(active))}</span></div></div><a class="link" href="trips.html">Подробнее →</a></div>`;
+  }
+  renderNews();renderStats(period);renderChart();renderRecent();renderAchievements();renderCurrentTrip();
+  $('allNews').addEventListener('click',event=>{event.preventDefault();showNotice('Новости VTS будут доступны в этом разделе после подключения страницы новостей.');});
+  function updateClock(){
+    const d=new Date();
+    $('footerTime').textContent='Время: '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+    $('footerDate').textContent='Дата: '+d.toLocaleDateString('ru-RU');
+  }
+  updateClock();
+})();
+</script>
+</body>
+</html>
