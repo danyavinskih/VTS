@@ -1,811 +1,202 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0b1220">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b111a">
 <title>VTS — Virtual Trucking System</title>
-
 <style>
-:root {
-  --bg:#0b1220;
-  --panel:#111c2d;
-  --panel2:#16243a;
-  --line:#26364d;
-  --text:#f1f5fb;
-  --muted:#8fa1ba;
-  --blue:#4798ff;
-  --blue2:#2475e8;
-  --green:#36d399;
-  --red:#ff6b78;
-  --radius:18px;
-}
-* { box-sizing:border-box; }
-body {
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  font-size:14px;
-}
-button,input,select,textarea { font:inherit; }
-button { cursor:pointer; }
-button:focus-visible,input:focus-visible,select:focus-visible {
-  outline:2px solid var(--blue);
-  outline-offset:2px;
-}
-.app { min-height:100vh; }
-.topbar {
-  position:sticky; top:0; z-index:10;
-  display:flex; align-items:center; gap:14px;
-  padding:15px 20px;
-  background:rgba(11,18,32,.94);
-  border-bottom:1px solid var(--line);
-  backdrop-filter:blur(16px);
-}
-.icon-btn {
-  display:grid; place-items:center;
-  width:42px; height:42px;
-  border:1px solid var(--line);
-  border-radius:13px;
-  color:var(--text); background:var(--panel);
-}
-.brand { display:flex; align-items:center; gap:11px; }
-.brand-mark {
-  display:grid; place-items:center;
-  width:40px;height:40px;border-radius:13px;
-  background:linear-gradient(135deg,#409cff,#225bd1);
-  font-weight:900;font-size:15px;
-  box-shadow:0 5px 22px #2475e833;
-}
-.brand-name { font-size:16px;font-weight:850;letter-spacing:1px; }
-.brand-sub { color:var(--muted);font-size:11px;margin-top:3px; }
-.top-status { margin-left:auto;display:flex;align-items:center;gap:7px;color:var(--muted);font-size:12px; }
-.dot { width:7px;height:7px;border-radius:50%;background:var(--green); }
-.content { width:min(1080px,100%);margin:auto;padding:26px 20px 60px; }
-.page { display:none;animation:appear .18s ease; }
-.page.active { display:block; }
-@keyframes appear { from {opacity:0;transform:translateY(4px)} to {opacity:1;transform:none} }
-h1 { margin:0;font-size:clamp(24px,4vw,32px);letter-spacing:-.7px; }
-h2 { font-size:17px;margin:0; }
-h3 { font-size:14px;margin:0; }
-.subtitle { color:var(--muted);margin:8px 0 23px;line-height:1.5; }
-.section-head { display:flex;align-items:center;justify-content:space-between;gap:12px;margin:27px 0 14px; }
-.panel {
-  background:linear-gradient(145deg,var(--panel),#101a2a);
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  padding:19px;
-  min-width:0;
-}
-.grid { display:grid;gap:14px; }
-.stats { grid-template-columns:repeat(4,minmax(0,1fr)); }
-.stat-top { display:flex;justify-content:space-between;align-items:center;gap:8px; }
-.stat-icon {
-  width:37px;height:37px;display:grid;place-items:center;
-  background:#1d3451;color:#8ec3ff;border-radius:12px;
-}
-.stat-label { color:var(--muted);font-size:12px;margin-top:14px; }
-.stat-value { font-size:clamp(20px,3vw,26px);font-weight:800;margin-top:7px;overflow-wrap:anywhere; }
-.stat-foot { font-size:11px;color:var(--muted);margin-top:6px; }
-.two-col { grid-template-columns:1.25fr .75fr;align-items:start; }
-.active-route { display:flex;align-items:center;gap:13px;margin:18px 0; }
-.route-point { flex:1;min-width:0; }
-.route-point small { display:block;color:var(--muted);font-size:11px;margin-bottom:6px; }
-.route-point strong { display:block;font-size:16px;overflow-wrap:anywhere; }
-.route-line { width:42px;height:2px;background:var(--blue);position:relative;flex-shrink:0; }
-.route-line:after { content:"";position:absolute;right:-1px;top:-4px;border-left:8px solid var(--blue);border-top:5px solid transparent;border-bottom:5px solid transparent; }
-.meta-row { display:flex;gap:8px;flex-wrap:wrap; }
-.pill { display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 10px;background:#1a2a40;color:#b9cbe2;font-size:11px; }
-.pill.blue { color:#9acbff;background:#17365b; }
-.pill.green { color:#7ce8bd;background:#14392f; }
-.pill.red { color:#ff9ca5;background:#42242c; }
-.btn {
-  border:0;border-radius:12px;padding:11px 15px;
-  background:var(--blue2);color:white;font-weight:700;
-  transition:filter .15s,transform .15s;
-}
-.btn:hover { filter:brightness(1.12); }
-.btn:active { transform:scale(.98); }
-.btn.secondary { background:#1d2d43;border:1px solid var(--line);color:var(--text); }
-.btn.danger { background:#47232b;color:#ffabb2; }
-.btn.small { padding:8px 11px;font-size:12px; }
-.btn.full { width:100%; }
-.actions { display:flex;gap:8px;flex-wrap:wrap;margin-top:15px; }
-.empty { text-align:center;padding:30px 15px;color:var(--muted);line-height:1.6; }
-.empty-icon { font-size:28px;margin-bottom:12px;color:#7291b6; }
-.list { display:grid;gap:10px; }
-.list-item { display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid var(--line); }
-.list-item:last-child { border-bottom:0;padding-bottom:0; }
-.list-icon { flex-shrink:0;display:grid;place-items:center;width:35px;height:35px;border-radius:11px;background:#1c304a;color:#91c5ff; }
-.list-main { flex:1;min-width:0; }
-.list-title { font-weight:700;overflow-wrap:anywhere; }
-.list-sub { color:var(--muted);font-size:12px;margin-top:5px;line-height:1.5; }
-.list-value { text-align:right;font-weight:750;white-space:nowrap; }
-.positive { color:var(--green); }
-.negative { color:var(--red); }
-.form-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px; }
-.field { display:flex;flex-direction:column;gap:7px;min-width:0; }
-.field label { font-size:12px;color:#b6c5d8; }
-.field input,.field select,.field textarea {
-  width:100%;min-width:0;
-  padding:12px 13px;border-radius:11px;
-  background:#0c1626;border:1px solid var(--line);
-  color:var(--text);
-}
-.field textarea { min-height:80px;resize:vertical; }
-.field input::placeholder { color:#5f7189; }
-.field.full-width { grid-column:1/-1; }
-.form-panel { margin-bottom:16px; }
-.form-title { margin-bottom:17px; }
-.card-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-.amount { font-size:28px;font-weight:850;margin:14px 0 5px;overflow-wrap:anywhere; }
-.muted { color:var(--muted); }
-.small-text { font-size:12px; }
-.profile-head { display:flex;align-items:center;gap:15px;margin-bottom:20px; }
-.avatar { width:62px;height:62px;display:grid;place-items:center;border-radius:19px;background:linear-gradient(135deg,#275da0,#1a2b47);font-size:23px;font-weight:850; }
-.divider { height:1px;background:var(--line);margin:18px 0; }
-.drawer-backdrop {
-  position:fixed;inset:0;background:#0009;z-index:20;
-  opacity:0;visibility:hidden;transition:.2s;
-}
-.drawer-backdrop.open { opacity:1;visibility:visible; }
-.drawer {
-  position:fixed;left:0;top:0;bottom:0;z-index:21;
-  width:min(310px,86vw);padding:22px 16px;
-  background:#0f1a2b;border-right:1px solid var(--line);
-  transform:translateX(-105%);transition:transform .22s ease;
-  overflow-y:auto;
-}
-.drawer.open { transform:translateX(0); }
-.drawer-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:25px;padding:0 3px; }
-.nav-label { font-size:10px;letter-spacing:1.5px;color:#71839c;margin:19px 10px 9px; }
-.nav-item {
-  display:flex;align-items:center;gap:13px;width:100%;
-  padding:13px 12px;margin:4px 0;
-  color:#aebed2;background:transparent;border:1px solid transparent;
-  border-radius:12px;text-align:left;
-}
-.nav-item svg { width:20px;height:20px;flex-shrink:0; }
-.nav-item:hover { background:#16263b; }
-.nav-item.active { background:#193657;color:#a5d2ff;border-color:#25496e; }
-.nav-num { margin-left:auto;color:#6e829d;font-size:11px; }
-.notice { padding:13px 14px;border-radius:12px;background:#172a42;color:#a9c8ec;font-size:12px;line-height:1.6; }
-.footer-note { text-align:center;color:#53647c;font-size:11px;margin-top:35px; }
-@media(max-width:760px) {
-  .content { padding:22px 14px 45px; }
-  .topbar { padding:12px 14px; }
-  .stats { grid-template-columns:repeat(2,minmax(0,1fr));gap:10px; }
-  .two-col { grid-template-columns:1fr; }
-  .card-grid { grid-template-columns:1fr 1fr; }
-  .panel { padding:15px; }
-  .stat-value { font-size:23px; }
-}
-@media(max-width:420px) {
-  .brand-sub { display:none; }
-  .top-status { font-size:10px; }
-  .form-grid { grid-template-columns:1fr; }
-  .field.full-width { grid-column:auto; }
-  .card-grid { grid-template-columns:1fr; }
-  .route-line { width:23px; }
-  .route-point strong { font-size:14px; }
-  .list-value { font-size:12px; }
-}
+:root{--bg:#0b111a;--panel:#131d2a;--panel2:#192638;--blue:#438cff;--text:#f0f5ff;--muted:#91a2ba;--border:#26364a;--green:#42d6a0;--gold:#f5c96a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding-bottom:30px}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+header{padding:15px 16px;display:flex;align-items:center;gap:13px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(11,17,26,.96);backdrop-filter:blur(16px);z-index:15}
+.menu-button{width:44px;height:44px;border:1px solid var(--border);border-radius:13px;background:var(--panel);color:var(--text);font-size:24px;display:grid;place-items:center;flex-shrink:0}
+.logo{font-size:25px;font-weight:850;letter-spacing:2px}
+.logo span{color:var(--blue)}
+.subtitle{font-size:10px;color:var(--muted);letter-spacing:1.2px;margin-top:3px}
+.status{font-size:10px;color:var(--green);background:#12332d;padding:7px 9px;border-radius:20px;margin-left:auto;white-space:nowrap}
+main{max-width:850px;margin:auto;padding:22px 16px}
+.eyebrow{color:var(--blue);font-size:11px;font-weight:700;letter-spacing:1.5px}
+h1{font-size:28px;margin:8px 0 7px}
+.description{color:var(--muted);font-size:14px;line-height:1.55}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:18px 0}
+.card{background:linear-gradient(145deg,#162437,#121c29);border:1px solid var(--border);border-radius:17px;padding:15px;min-width:0}
+.card-label{font-size:12px;color:var(--muted)}
+.card-value{font-size:22px;font-weight:750;margin-top:10px;overflow-wrap:anywhere}
+.card-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:#1e3552;color:#8fc0ff;margin-bottom:13px}
+.section-title{font-size:17px;font-weight:750;margin:25px 0 12px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:15px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.muted{color:var(--muted);font-size:13px}
+.primary,.secondary,.danger{border:0;border-radius:11px;padding:12px 15px;font-weight:650}
+.primary{background:var(--blue);color:white}
+.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border)}
+.danger{background:#48212a;color:#ffb5c0}
+.full{width:100%;margin-top:12px}
+input,select,textarea{width:100%;background:#0d1622;border:1px solid var(--border);border-radius:10px;color:var(--text);padding:12px;margin-top:6px}
+label{display:block;font-size:13px;color:var(--muted);margin-top:14px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.item{padding:13px 0;border-bottom:1px solid var(--border)}
+.item:last-child{border-bottom:0}
+.item-title{font-weight:650}
+.item-sub{color:var(--muted);font-size:12px;margin-top:5px;line-height:1.5}
+.empty{text-align:center;color:var(--muted);padding:23px 8px;font-size:13px;line-height:1.6}
+.small-button{font-size:11px;padding:7px 9px}
+.notice{color:var(--muted);font-size:12px;line-height:1.5;margin-top:12px}
+.icon{width:21px;height:21px;display:inline-block;vertical-align:middle;flex-shrink:0}
+.news-item{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--border)}
+.news-item:last-child{border-bottom:0}
+.news-icon{width:38px;height:38px;display:grid;place-items:center;background:#1d3048;border-radius:12px;color:#82b7ff;flex-shrink:0}
+.news-text{font-size:13px;line-height:1.5}
+.news-time{font-size:11px;color:var(--muted);margin-top:4px}
+.order-route{display:flex;gap:10px;align-items:center;margin:16px 0}
+.route-dot{width:10px;height:10px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 5px #203754;flex-shrink:0}
+.route-line{height:26px;border-left:1px dashed #4c6381;margin:5px 0 5px 4px}
+.route-info{min-width:0}
+.route-city{font-weight:700;overflow-wrap:anywhere}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.58);z-index:30;opacity:0;visibility:hidden;transition:.22s}
+.overlay.open{opacity:1;visibility:visible}
+.drawer{position:fixed;left:0;top:0;bottom:0;width:min(82vw,320px);background:#101a28;border-right:1px solid var(--border);z-index:31;transform:translateX(-102%);transition:transform .24s ease;padding:20px 15px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px}
+.drawer.open{transform:translateX(0)}
+.drawer-top{display:flex;align-items:center;justify-content:space-between;padding:5px 2px 18px;border-bottom:1px solid var(--border);margin-bottom:8px}
+.close-menu{background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:10px;width:38px;height:38px;font-size:22px}
+.drawer-link{display:flex;align-items:center;gap:13px;border:1px solid transparent;background:transparent;color:var(--muted);text-align:left;padding:13px;border-radius:12px;font-weight:600}
+.drawer-link.active{background:#172b45;border-color:#294466;color:#8fc0ff}
+.drawer-link .icon{width:22px;height:22px}
+.drawer-footer{margin-top:auto;border-top:1px solid var(--border);padding:14px 5px 0;color:var(--muted);font-size:11px;line-height:1.6}
+.profile-hero{position:relative;overflow:hidden;background:radial-gradient(circle at 90% 10%,#244b79 0,transparent 38%),linear-gradient(145deg,#172b43,#101a28);border:1px solid #2a4565;border-radius:22px;padding:22px;margin-top:16px}
+.profile-hero:after{content:"VTS";position:absolute;right:8px;bottom:-25px;font-size:100px;font-weight:900;letter-spacing:-7px;color:rgba(150,190,240,.055);pointer-events:none}
+.profile-top{display:flex;align-items:center;gap:14px;position:relative;z-index:1}
+.avatar{width:68px;height:68px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(145deg,#3b82d9,#24446b);font-size:25px;font-weight:850;box-shadow:0 8px 25px #07101d80;flex-shrink:0}
+.profile-name{font-size:22px;font-weight:800;overflow-wrap:anywhere}
+.profile-meta{font-size:12px;color:#a9bfd9;margin-top:5px}
+.rating-pill{display:inline-flex;align-items:center;gap:5px;background:#332c1b;border:1px solid #5b4b2a;color:#ffd36b;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:750;margin-top:9px}
+.edit-icon{margin-left:auto;width:42px;height:42px;border-radius:13px;background:#203650;border:1px solid #355575;color:#dcecff;font-size:18px;flex-shrink:0}
+.profile-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px;position:relative;z-index:1}
+.profile-tag{border:1px solid #334a63;background:#132338;color:#d4e4f8;border-radius:9px;padding:7px 9px;font-size:11px}
+.profile-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:13px 0}
+.stat-tile{background:linear-gradient(145deg,#172638,#111b28);border:1px solid var(--border);border-radius:16px;padding:14px;min-width:0}
+.stat-symbol{font-size:19px;margin-bottom:9px}
+.stat-number{font-size:20px;font-weight:800;overflow-wrap:anywhere;margin-top:5px}
+.stat-label{font-size:11px;color:var(--muted);line-height:1.4}
+.stat-foot{font-size:10px;color:#8fa6c0;margin-top:7px}
+.chart-panel{background:var(--panel);border:1px solid var(--border);border-radius:17px;padding:15px;margin-top:12px}
+.chart-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.chart-title{font-size:14px;font-weight:750}
+.chart-total{font-size:20px;font-weight:800;margin-top:7px}
+.period-switch{display:flex;gap:4px;background:#0d1622;padding:4px;border-radius:10px;border:1px solid var(--border);margin-top:14px}
+.period-switch button{flex:1;border:0;border-radius:7px;background:transparent;color:var(--muted);padding:8px 5px;font-size:11px}
+.period-switch button.active{background:#244a78;color:white}
+.bar-chart{height:145px;display:flex;align-items:stretch;gap:8px;padding-top:17px;border-bottom:1px solid #34465c;margin-top:10px}
+.bar-col{display:flex;flex:1;min-width:0;flex-direction:column;justify-content:flex-end;align-items:center;gap:7px}
+.bar-value{font-size:9px;color:#a8bed7;white-space:nowrap;max-width:100%;overflow:hidden}
+.bar-track{height:100px;width:min(100%,25px);display:flex;align-items:flex-end;justify-content:center}
+.bar-fill{width:100%;min-height:3px;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,#69b2ff,#3479d4);box-shadow:0 0 15px #3987ed22}
+.bar-label{font-size:10px;color:var(--muted);margin-bottom:-19px;transform:translateY(21px)}
+.chart-legend{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);margin-top:29px}
+.legend-dot{width:8px;height:8px;background:#4d9af5;border-radius:50%}
+.profile-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.achievement{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid var(--border)}
+.achievement:last-child{border-bottom:0}
+.achievement-icon{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:#20354d;font-size:19px;flex-shrink:0}
+.achievement-title{font-size:13px;font-weight:700}
+.achievement-sub{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.45}
+.achievement-state{margin-left:auto;color:var(--green);font-size:10px;white-space:nowrap}
+.rating-stars{display:flex;gap:8px;margin-top:10px}
+.rating-stars button{border:1px solid var(--border);background:#101a28;color:#53647a;border-radius:10px;font-size:25px;flex:1;padding:7px 2px}
+.rating-stars button.selected{color:#ffd36b;background:#332c1b;border-color:#715d31}
+.profile-edit{display:none;margin-top:12px}
+.profile-edit.open{display:block}
+.profile-edit .panel{border-color:#355579}
+.recent-trip{padding:12px 0;border-bottom:1px solid var(--border)}
+.recent-trip:last-child{border-bottom:0}
+@media(min-width:600px){.profile-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.bar-chart{height:175px}.bar-track{height:125px}.cards{grid-template-columns:repeat(4,minmax(0,1fr))}main{padding-top:30px}.card-value{font-size:21px}}
+@media(max-width:360px){.status{display:none}.form-grid{grid-template-columns:1fr}.card-value{font-size:20px}}
 </style>
 </head>
-
 <body>
-<div class="app">
-  <header class="topbar">
-    <button class="icon-btn" id="menuButton" aria-label="Открыть меню">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <path d="M4 6h16M4 12h16M4 18h16"/>
-      </svg>
-    </button>
-    <div class="brand">
-      <div class="brand-mark">VTS</div>
-      <div>
-        <div class="brand-name">VIRTUAL TRUCKING</div>
-        <div class="brand-sub">TRUCKER MANAGEMENT SYSTEM</div>
-      </div>
-    </div>
-    <div class="top-status"><span class="dot"></span> Локальная система</div>
-  </header>
-
-  <div class="drawer-backdrop" id="drawerBackdrop"></div>
-  <aside class="drawer" id="drawer">
-    <div class="drawer-head">
-      <div class="brand">
-        <div class="brand-mark">VTS</div>
-        <div><div class="brand-name">VTS</div><div class="brand-sub">Рабочее пространство</div></div>
-      </div>
-      <button class="icon-btn" id="closeMenu" aria-label="Закрыть меню">✕</button>
-    </div>
-    <div class="nav-label">РАБОЧЕЕ ПРОСТРАНСТВО</div>
-    <nav id="navigation">
-      <button class="nav-item" data-page="profile">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>
-        <span>Профиль</span><span class="nav-num">01</span>
-      </button>
-      <button class="nav-item active" data-page="home">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></svg>
-        <span>Главное меню</span><span class="nav-num">02</span>
-      </button>
-      <button class="nav-item" data-page="active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h12v11H3zM15 11h4l3 4v3h-7z"/><circle cx="7" cy="19" r="2"/><circle cx="18" cy="19" r="2"/></svg>
-        <span>Рейс</span><span class="nav-num">03</span>
-      </button>
-      <button class="nav-item" data-page="dispatcher">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4zM8 8h8M8 12h5M8 16h3"/><path d="M17 14v5M14.5 16.5h5"/></svg>
-        <span>Диспетчер</span><span class="nav-num">04</span>
-      </button>
-      <button class="nav-item" data-page="history">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l4 2"/></svg>
-        <span>История рейсов</span><span class="nav-num">05</span>
-      </button>
-      <button class="nav-item" data-page="bank">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg>
-        <span>Банк</span><span class="nav-num">06</span>
-      </button>
-    </nav>
-    <div class="divider"></div>
-    <div class="notice">VTS — личная система учёта виртуальных рейсов. Данные сохраняются в этом браузере.</div>
-  </aside>
-
-  <main class="content">
-
-    <!-- 02: ГЛАВНОЕ МЕНЮ -->
-    <section class="page active" id="page-home">
-      <h1 id="welcomeTitle">Добро пожаловать в VTS</h1>
-      <p class="subtitle" id="welcomeSubtitle">Ваша рабочая панель водителя.</p>
-
-      <div class="grid stats">
-        <div class="panel">
-          <div class="stat-top"><span class="muted small-text">Пробег сегодня</span><span class="stat-icon">↗</span></div>
-          <div class="stat-value" id="todayKm">0 км</div>
-          <div class="stat-foot">За завершённые рейсы</div>
-        </div>
-        <div class="panel">
-          <div class="stat-top"><span class="muted small-text">Рейсы сегодня</span><span class="stat-icon">▤</span></div>
-          <div class="stat-value" id="todayTrips">0</div>
-          <div class="stat-foot">Завершено поездок</div>
-        </div>
-        <div class="panel">
-          <div class="stat-top"><span class="muted small-text">Доход сегодня</span><span class="stat-icon">₽</span></div>
-          <div class="stat-value" id="todayIncome">0 ₽</div>
-          <div class="stat-foot">Чистый доход</div>
-        </div>
-        <div class="panel">
-          <div class="stat-top"><span class="muted small-text">Время в пути</span><span class="stat-icon">◷</span></div>
-          <div class="stat-value" style="font-size:21px">Нет данных</div>
-          <div class="stat-foot">Время рейсов пока не учитывается</div>
-        </div>
-      </div>
-
-      <div class="section-head"><h2>Текущий рейс</h2><button class="btn secondary small" data-go="active">Все рейсы</button></div>
-      <div id="homeActive"></div>
-
-      <div class="section-head"><h2>Последние события</h2></div>
-      <div class="panel"><div id="homeEvents" class="list"></div></div>
-    </section>
-
-    <!-- 01: ПРОФИЛЬ -->
-    <section class="page" id="page-profile">
-      <h1>Профиль водителя</h1>
-      <p class="subtitle">Личные данные, компания и статистика карьеры.</p>
-      <div class="panel">
-        <div class="profile-head">
-          <div class="avatar" id="profileAvatar">V</div>
-          <div><h2 id="profileDisplayName">Водитель VTS</h2><div class="muted small-text" id="profileDisplayCompany" style="margin-top:6px">Без компании</div></div>
-        </div>
-        <div class="divider"></div>
-        <form id="profileForm" class="form-grid">
-          <div class="field"><label for="profileName">Имя водителя</label><input id="profileName" placeholder="Например, Данил"></div>
-          <div class="field"><label for="profileCompany">Транспортная компания</label><input id="profileCompany" placeholder="Название компании"></div>
-          <div class="field full-width"><label for="profilePosition">Должность</label><input id="profilePosition" placeholder="Водитель-дальнобойщик"></div>
-          <div class="field full-width"><button class="btn" type="submit">Сохранить профиль</button></div>
-        </form>
-      </div>
-      <div class="section-head"><h2>Статистика карьеры</h2></div>
-      <div class="grid card-grid">
-        <div class="panel"><div class="muted small-text">Всего завершено рейсов</div><div class="amount" id="careerTrips">0</div></div>
-        <div class="panel"><div class="muted small-text">Общий пробег</div><div class="amount" id="careerKm">0 км</div></div>
-        <div class="panel"><div class="muted small-text">Общий чистый доход</div><div class="amount" id="careerIncome">0 ₽</div></div>
-        <div class="panel"><div class="muted small-text">Активные рейсы</div><div class="amount" id="careerActive">0</div></div>
-      </div>
-      <div class="section-head"><h2>Резервная копия</h2></div>
-      <div class="panel">
-        <p class="muted small-text" style="line-height:1.7">Экспорт сохранит данные VTS в JSON-файл. Импорт загрузит данные из ранее созданной копии.</p>
-        <div class="actions">
-          <button class="btn" id="exportButton" type="button">Экспорт данных</button>
-          <button class="btn secondary" id="importButton" type="button">Импорт данных</button>
-          <input type="file" id="importFile" accept=".json,application/json" hidden>
-        </div>
-      </div>
-    </section>
-
-    <!-- 03: АКТИВНЫЕ РЕЙСЫ -->
-    <section class="page" id="page-active">
-      <h1>Активные рейсы</h1>
-      <p class="subtitle">Здесь отображаются только рейсы, которые ещё не завершены.</p>
-      <div id="activeList" class="list"></div>
-    </section>
-
-    <!-- 04: ДИСПЕТЧЕР -->
-    <section class="page" id="page-dispatcher">
-      <h1>Диспетчер</h1>
-      <p class="subtitle">Создавайте новые рейсы и назначайте параметры перевозки.</p>
-      <div class="panel form-panel">
-        <h2 class="form-title">Новый рейс</h2>
-        <form id="orderForm" class="form-grid">
-          <div class="field"><label for="orderFrom">Откуда</label><input id="orderFrom" required placeholder="Например, Берлин"></div>
-          <div class="field"><label for="orderTo">Куда</label><input id="orderTo" required placeholder="Например, Прага"></div>
-          <div class="field"><label for="orderCargo">Груз</label><input id="orderCargo" required placeholder="Например, продукты"></div>
-          <div class="field"><label for="orderDistance">Расстояние, км</label><input id="orderDistance" type="number" min="1" step="1" required placeholder="450"></div>
-          <div class="field"><label for="orderPay">Оплата, ₽</label><input id="orderPay" type="number" min="0" step="0.01" required placeholder="85000"></div>
-          <div class="field"><label for="orderDate">Дата создания</label><input id="orderDate" type="date" required></div>
-          <div class="field full-width"><button class="btn full" type="submit">＋ Создать рейс</button></div>
-        </form>
-      </div>
-      <div class="notice">После создания рейс появится в разделе «Рейс». Завершить его можно в карточке активного рейса.</div>
-    </section>
-
-    <!-- 05: ИСТОРИЯ РЕЙСОВ -->
-    <section class="page" id="page-history">
-      <h1>История рейсов</h1>
-      <p class="subtitle">Все завершённые поездки. Здесь можно добавить рейс, выполненный вне системы.</p>
-      <div class="section-head">
-        <h2>Завершённые рейсы</h2>
-        <button class="btn small" id="showManualTrip">＋ Добавить рейс</button>
-      </div>
-      <div class="panel form-panel" id="manualTripPanel" hidden>
-        <h2 class="form-title">Добавить завершённый рейс</h2>
-        <form id="tripForm" class="form-grid">
-          <div class="field"><label for="tripFrom">Откуда</label><input id="tripFrom" required placeholder="Город отправления"></div>
-          <div class="field"><label for="tripTo">Куда</label><input id="tripTo" required placeholder="Город прибытия"></div>
-          <div class="field"><label for="tripCargo">Груз</label><input id="tripCargo" required placeholder="Тип груза"></div>
-          <div class="field"><label for="tripDistance">Расстояние, км</label><input id="tripDistance" type="number" min="1" step="1" required></div>
-          <div class="field"><label for="tripGross">Оплата до комиссии, ₽</label><input id="tripGross" type="number" min="0" step="0.01" required></div>
-          <div class="field"><label for="tripDate">Дата завершения</label><input id="tripDate" type="date" required></div>
-          <div class="field"><label for="tripFee">Комиссия, ₽</label><input id="tripFee" type="number" min="0" step="0.01" value="0"></div>
-          <div class="field full-width"><button class="btn full" type="submit">Сохранить в истории</button></div>
-        </form>
-      </div>
-      <div id="historyList" class="list"></div>
-    </section>
-
-    <!-- 06: БАНК -->
-    <section class="page" id="page-bank">
-      <h1>Банк</h1>
-      <p class="subtitle">Баланс, поступления за рейсы и история финансовых операций.</p>
-      <div class="panel">
-        <div class="muted small-text">Текущий баланс</div>
-        <div class="amount" id="bankBalance">0 ₽</div>
-        <div class="muted small-text">Доступные средства VTS</div>
-      </div>
-      <div class="section-head"><h2>Пополнить баланс</h2></div>
-      <div class="panel">
-        <form id="depositForm" class="form-grid">
-          <div class="field"><label for="depositAmount">Сумма, ₽</label><input id="depositAmount" type="number" min="0.01" step="0.01" required placeholder="10000"></div>
-          <div class="field"><label for="depositNote">Комментарий</label><input id="depositNote" placeholder="Например, начальный капитал"></div>
-          <div class="field full-width"><button class="btn full" type="submit">Пополнить баланс</button></div>
-        </form>
-      </div>
-      <div class="section-head"><h2>История операций</h2></div>
-      <div class="panel"><div id="transactionList" class="list"></div></div>
-    </section>
-
-    <div class="footer-note">VTS · Virtual Trucking System · Личный учёт рейсов</div>
-  </main>
-</div>
-
+<header>
+<button class="menu-button" aria-label="Открыть меню" onclick="toggleMenu(true)">☰</button>
+<div><div class="logo">V<span>T</span>S</div><div class="subtitle">VIRTUAL TRUCKING SYSTEM · ETS2</div></div>
+<div class="status">● Система готова</div>
+</header>
+<div class="overlay" id="overlay" onclick="toggleMenu(false)"></div>
+<aside class="drawer" id="drawer" aria-label="Главное меню">
+<div class="drawer-top"><div><div class="logo">V<span>T</span>S</div><div class="subtitle">ГЛАВНОЕ МЕНЮ</div></div><button class="close-menu" aria-label="Закрыть меню" onclick="toggleMenu(false)">×</button></div>
+<button class="drawer-link active" data-page="home" onclick="showPage('home')">⌂　Главная</button>
+<button class="drawer-link" data-page="trips" onclick="showPage('trips')">☷　Рейсы</button>
+<button class="drawer-link" data-page="orders" onclick="showPage('orders')">▤　Заказы</button>
+<button class="drawer-link" data-page="bank" onclick="showPage('bank')">▣　Банк</button>
+<button class="drawer-link" data-page="profile" onclick="showPage('profile')">♙　Профиль</button>
+<div class="drawer-footer">VTS · Virtual Trucking System<br>Учёт виртуальной карьеры ETS2</div>
+</aside>
+<main id="app"></main>
 <script>
-(() => {
-  "use strict";
-
-  const STORAGE_KEY = "vts_data_v1";
-  const $ = id => document.getElementById(id);
-  const today = () => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-  };
-  const uid = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}_${Math.random().toString(16).slice(2)}`);
-  const number = value => Number(value) || 0;
-  const money = value => `${number(value).toLocaleString("ru-RU",{maximumFractionDigits:2})} ₽`;
-  const distance = value => `${number(value).toLocaleString("ru-RU")} км`;
-  const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  })[ch]);
-  const dateText = value => {
-    if (!value) return "Дата не указана";
-    const d = new Date(`${value}T12:00:00`);
-    return Number.isNaN(d.getTime()) ? esc(value) : d.toLocaleDateString("ru-RU");
-  };
-  const asDate = value => value || today();
-
-  function loadData() {
-    let saved = {};
-    try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") || {}; }
-    catch (e) { console.error("Не удалось прочитать VTS:", e); }
-    return {
-      ...saved,
-      profile: {name:"",company:"",position:"Водитель-дальнобойщик",...(saved.profile || {})},
-      trips: Array.isArray(saved.trips) ? saved.trips : [],
-      orders: Array.isArray(saved.orders) ? saved.orders : [],
-      transactions: Array.isArray(saved.transactions) ? saved.transactions : [],
-      balance: number(saved.balance)
-    };
-  }
-
-  let data = loadData();
-
-  function save() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      return true;
-    } catch (e) {
-      alert("Не удалось сохранить данные. Проверьте свободное место браузера.");
-      console.error(e);
-      return false;
-    }
-  }
-
-  function go(page) {
-    const valid = ["profile","home","active","dispatcher","history","bank"];
-    if (!valid.includes(page)) page = "home";
-    document.querySelectorAll(".page").forEach(el => el.classList.remove("active"));
-    $("page-" + page).classList.add("active");
-    document.querySelectorAll(".nav-item").forEach(el =>
-      el.classList.toggle("active", el.dataset.page === page)
-    );
-    closeDrawer();
-    window.scrollTo({top:0,behavior:"smooth"});
-    render();
-  }
-
-  function openDrawer() {
-    $("drawer").classList.add("open");
-    $("drawerBackdrop").classList.add("open");
-  }
-  function closeDrawer() {
-    $("drawer").classList.remove("open");
-    $("drawerBackdrop").classList.remove("open");
-  }
-
-  $("menuButton").addEventListener("click", openDrawer);
-  $("closeMenu").addEventListener("click", closeDrawer);
-  $("drawerBackdrop").addEventListener("click", closeDrawer);
-  $("navigation").addEventListener("click", event => {
-    const button = event.target.closest("[data-page]");
-    if (button) go(button.dataset.page);
-  });
-  document.addEventListener("click", event => {
-    const button = event.target.closest("[data-go]");
-    if (button) go(button.dataset.go);
-  });
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape") closeDrawer();
-  });
-
-  function activeOrders() {
-    return data.orders.filter(order => order.status !== "completed" && order.status !== "cancelled");
-  }
-
-  function orderCard(order) {
-    const pay = number(order.pay ?? order.gross);
-    return `
-      <div class="panel">
-        <div class="stat-top">
-          <span class="pill blue">● Активный рейс</span>
-          <span class="muted small-text">${dateText(order.date)}</span>
-        </div>
-        <div class="active-route">
-          <div class="route-point"><small>ОТКУДА</small><strong>${esc(order.from || "Не указано")}</strong></div>
-          <div class="route-line"></div>
-          <div class="route-point"><small>КУДА</small><strong>${esc(order.to || "Не указано")}</strong></div>
-        </div>
-        <div class="meta-row">
-          <span class="pill">${esc(order.cargo || "Груз не указан")}</span>
-          <span class="pill">${distance(order.distance)}</span>
-          <span class="pill green">${money(pay)}</span>
-        </div>
-        <div class="actions">
-          <button class="btn small" data-complete="${esc(order.id)}">Завершить рейс</button>
-          <button class="btn secondary small" data-cancel="${esc(order.id)}">Отменить</button>
-        </div>
-      </div>`;
-  }
-
-  function emptyState(icon, title, message, buttonText, page) {
-    return `<div class="panel empty">
-      <div class="empty-icon">${icon}</div>
-      <strong style="color:var(--text)">${title}</strong>
-      <div style="margin:8px 0 15px">${message}</div>
-      ${buttonText ? `<button class="btn small" data-go="${page}">${buttonText}</button>` : ""}
-    </div>`;
-  }
-
-  function renderHome() {
-    const todays = data.trips.filter(trip => asDate(trip.date) === today());
-    $("welcomeTitle").textContent = data.profile.name
-      ? `С возвращением, ${data.profile.name}!`
-      : "Добро пожаловать в VTS";
-    $("welcomeSubtitle").textContent = data.profile.company
-      ? `${data.profile.company} · Рабочая панель водителя`
-      : "Ваша рабочая панель водителя.";
-
-    $("todayKm").textContent = distance(todays.reduce((sum,t) => sum + number(t.distance),0));
-    $("todayTrips").textContent = String(todays.length);
-    $("todayIncome").textContent = money(todays.reduce((sum,t) => sum + number(t.net ?? (number(t.gross)-number(t.fee))),0));
-
-    const active = activeOrders();
-    $("homeActive").innerHTML = active.length
-      ? orderCard(active[0])
-      : emptyState("↗","Нет активных рейсов","Создайте новый рейс через диспетчера, чтобы он появился здесь.","Открыть диспетчер","dispatcher");
-
-    const events = [];
-    data.trips.slice().reverse().slice(0,4).forEach(trip => events.push({
-      icon:"✓",title:"Рейс завершён",
-      sub:`${trip.from || "—"} → ${trip.to || "—"} · ${dateText(trip.date)}`,
-      value:`+${money(trip.net ?? (number(trip.gross)-number(trip.fee)))}`,
-      date:trip.date || ""
-    }));
-    data.transactions.slice().reverse().slice(0,4).forEach(tx => events.push({
-      icon:"₽",title:tx.note || "Денежная операция",
-      sub:dateText(tx.date),value:`${number(tx.amount)>=0?"+":""}${money(tx.amount)}`,
-      date:tx.date || ""
-    }));
-    events.sort((a,b) => String(b.date).localeCompare(String(a.date)));
-    $("homeEvents").innerHTML = events.length ? events.slice(0,5).map(event => `
-      <div class="list-item">
-        <div class="list-icon">${event.icon}</div>
-        <div class="list-main"><div class="list-title">${esc(event.title)}</div><div class="list-sub">${esc(event.sub)}</div></div>
-        <div class="list-value ${event.value.startsWith("+")?"positive":""}">${esc(event.value)}</div>
-      </div>`).join("") : `<div class="empty">Здесь появятся события после первых рейсов и операций.</div>`;
-  }
-
-  function renderActive() {
-    const orders = activeOrders();
-    $("activeList").innerHTML = orders.length
-      ? orders.map(orderCard).join("")
-      : emptyState("↗","Активных рейсов нет","Все рейсы будут отображаться здесь, пока не завершены.","Создать рейс","dispatcher");
-  }
-
-  function renderHistory() {
-    const trips = data.trips.slice().reverse();
-    $("historyList").innerHTML = trips.length ? trips.map(trip => {
-      const gross = number(trip.gross ?? trip.pay);
-      const fee = number(trip.fee);
-      const net = number(trip.net ?? gross-fee);
-      return `<div class="panel" style="margin-bottom:11px">
-        <div class="stat-top"><span class="pill green">✓ Завершён</span><span class="muted small-text">${dateText(trip.date)}</span></div>
-        <div class="active-route">
-          <div class="route-point"><small>ОТКУДА</small><strong>${esc(trip.from || "—")}</strong></div>
-          <div class="route-line"></div>
-          <div class="route-point"><small>КУДА</small><strong>${esc(trip.to || "—")}</strong></div>
-        </div>
-        <div class="meta-row">
-          <span class="pill">${esc(trip.cargo || "Груз не указан")}</span>
-          <span class="pill">${distance(trip.distance)}</span>
-          <span class="pill">Комиссия: ${money(fee)}</span>
-          <span class="pill green">Чистыми: ${money(net)}</span>
-        </div>
-        <div class="actions"><button class="btn danger small" data-delete-trip="${esc(trip.id)}">Удалить запись</button></div>
-      </div>`;
-    }).join("") : emptyState("◷","История пока пуста","Завершённые рейсы будут появляться здесь.","Добавить рейс","history");
-  }
-
-  function renderBank() {
-    $("bankBalance").textContent = money(data.balance);
-    const txs = data.transactions.slice().reverse();
-    $("transactionList").innerHTML = txs.length ? txs.map(tx => {
-      const amount = number(tx.amount);
-      return `<div class="list-item">
-        <div class="list-icon">${amount >= 0 ? "↙" : "↗"}</div>
-        <div class="list-main"><div class="list-title">${esc(tx.note || "Операция")}</div><div class="list-sub">${dateText(tx.date)}</div></div>
-        <div class="list-value ${amount >= 0 ? "positive" : "negative"}">${amount > 0 ? "+" : ""}${money(amount)}</div>
-      </div>`;
-    }).join("") : `<div class="empty">Денежные операции пока отсутствуют.</div>`;
-  }
-
-  function renderProfile() {
-    const p = data.profile;
-    $("profileName").value = p.name || "";
-    $("profileCompany").value = p.company || "";
-    $("profilePosition").value = p.position || "";
-    $("profileDisplayName").textContent = p.name || "Водитель VTS";
-    $("profileDisplayCompany").textContent = [p.company,p.position].filter(Boolean).join(" · ") || "Без компании";
-    $("profileAvatar").textContent = (p.name || "V").trim().charAt(0).toUpperCase();
-    $("careerTrips").textContent = data.trips.length.toLocaleString("ru-RU");
-    $("careerKm").textContent = distance(data.trips.reduce((sum,t) => sum+number(t.distance),0));
-    $("careerIncome").textContent = money(data.trips.reduce((sum,t) => sum+number(t.net ?? (number(t.gross)-number(t.fee))),0));
-    $("careerActive").textContent = String(activeOrders().length);
-  }
-
-  function render() {
-    renderHome();
-    renderActive();
-    renderHistory();
-    renderBank();
-    renderProfile();
-  }
-
-  function addTransaction(amount,note) {
-    data.balance = number(data.balance) + number(amount);
-    data.transactions.push({id:uid(),date:today(),amount:number(amount),note});
-  }
-
-  $("profileForm").addEventListener("submit", event => {
-    event.preventDefault();
-    data.profile.name = $("profileName").value.trim();
-    data.profile.company = $("profileCompany").value.trim();
-    data.profile.position = $("profilePosition").value.trim();
-    if (save()) {
-      render();
-      alert("Профиль сохранён.");
-    }
-  });
-
-  $("orderDate").value = today();
-  $("tripDate").value = today();
-
-  $("orderForm").addEventListener("submit", event => {
-    event.preventDefault();
-    const order = {
-      id:uid(),
-      from:$("orderFrom").value.trim(),
-      to:$("orderTo").value.trim(),
-      cargo:$("orderCargo").value.trim(),
-      distance:number($("orderDistance").value),
-      pay:number($("orderPay").value),
-      date:asDate($("orderDate").value),
-      status:"active"
-    };
-    if (!order.from || !order.to || !order.cargo || order.distance <= 0 || order.pay < 0) {
-      alert("Проверьте заполнение полей."); return;
-    }
-    data.orders.push(order);
-    if (save()) {
-      $("orderForm").reset();
-      $("orderDate").value = today();
-      render();
-      go("active");
-    }
-  });
-
-  document.addEventListener("click", event => {
-    const complete = event.target.closest("[data-complete]");
-    if (complete) {
-      const order = data.orders.find(o => String(o.id) === complete.dataset.complete);
-      if (!order || !activeOrders().some(o => String(o.id) === String(order.id))) return;
-      if (!confirm(`Завершить рейс ${order.from} → ${order.to}?`)) return;
-
-      const gross = number(order.pay ?? order.gross);
-      const fee = Math.round(gross * 0.10 * 100) / 100;
-      const net = gross-fee;
-      data.orders = data.orders.map(o => String(o.id) === String(order.id)
-        ? {...o,status:"completed"} : o);
-      data.trips.push({
-        id:uid(),from:order.from,to:order.to,cargo:order.cargo,
-        date:today(),distance:number(order.distance),gross,fee,net
-      });
-      addTransaction(net,`Оплата за рейс: ${order.from} → ${order.to}`);
-      if (save()) {
-        render();
-        alert(`Рейс завершён. Чистый доход: ${money(net)}. Комиссия 10%: ${money(fee)}.`);
-      }
-      return;
-    }
-
-    const cancel = event.target.closest("[data-cancel]");
-    if (cancel) {
-      const order = data.orders.find(o => String(o.id) === cancel.dataset.cancel);
-      if (!order || !confirm("Отменить этот рейс?")) return;
-      data.orders = data.orders.map(o => String(o.id) === String(order.id)
-        ? {...o,status:"cancelled"} : o);
-      if (save()) render();
-      return;
-    }
-
-    const removeTrip = event.target.closest("[data-delete-trip]");
-    if (removeTrip) {
-      const trip = data.trips.find(t => String(t.id) === removeTrip.dataset.deleteTrip);
-      if (!trip || !confirm("Удалить эту запись из истории? Баланс автоматически не изменится.")) return;
-      data.trips = data.trips.filter(t => String(t.id) !== String(trip.id));
-      if (save()) render();
-    }
-  });
-
-  $("showManualTrip").addEventListener("click", () => {
-    $("manualTripPanel").hidden = !$("manualTripPanel").hidden;
-    if (!$("manualTripPanel").hidden) $("tripFrom").focus();
-  });
-
-  $("tripForm").addEventListener("submit", event => {
-    event.preventDefault();
-    const gross = number($("tripGross").value);
-    const fee = number($("tripFee").value);
-    if (fee > gross) {
-      alert("Комиссия не может быть больше суммы оплаты."); return;
-    }
-    const trip = {
-      id:uid(),
-      from:$("tripFrom").value.trim(),
-      to:$("tripTo").value.trim(),
-      cargo:$("tripCargo").value.trim(),
-      distance:number($("tripDistance").value),
-      date:asDate($("tripDate").value),
-      gross,fee,net:gross-fee
-    };
-    if (!trip.from || !trip.to || !trip.cargo || trip.distance <= 0 || gross < 0 || fee < 0) {
-      alert("Проверьте заполнение полей."); return;
-    }
-    data.trips.push(trip);
-    if (save()) {
-      $("tripForm").reset();
-      $("tripDate").value = today();
-      $("tripFee").value = "0";
-      $("manualTripPanel").hidden = true;
-      render();
-      alert("Рейс добавлен в историю. Баланс автоматически не изменён.");
-    }
-  });
-
-  $("depositForm").addEventListener("submit", event => {
-    event.preventDefault();
-    const amount = number($("depositAmount").value);
-    if (amount <= 0) { alert("Введите сумму больше нуля."); return; }
-    const note = $("depositNote").value.trim() || "Пополнение баланса";
-    addTransaction(amount,note);
-    if (save()) {
-      $("depositForm").reset();
-      render();
-    }
-  });
-
-  $("exportButton").addEventListener("click", () => {
-    const blob = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `VTS-backup-${today()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  });
-
-  $("importButton").addEventListener("click", () => $("importFile").click());
-  $("importFile").addEventListener("change", async event => {
-    const file = event.target.files[0];
-    if (!file) return;
-    try {
-      const imported = JSON.parse(await file.text());
-      if (!imported || typeof imported !== "object" ||
-          !Array.isArray(imported.trips) || !Array.isArray(imported.orders)) {
-        throw new Error("Формат файла не распознан");
-      }
-      if (!confirm("Импорт заменит текущие данные VTS. Продолжить?")) return;
-      data = {
-        ...imported,
-        profile:{name:"",company:"",position:"Водитель-дальнобойщик",...(imported.profile || {})},
-        trips:imported.trips,
-        orders:imported.orders,
-        transactions:Array.isArray(imported.transactions) ? imported.transactions : [],
-        balance:number(imported.balance)
-      };
-      if (save()) {
-        render();
-        alert("Данные успешно импортированы.");
-      }
-    } catch (error) {
-      alert("Не удалось импортировать файл. Проверьте, что это резервная копия VTS.");
-    } finally {
-      event.target.value = "";
-    }
-  });
-
-  render();
-})();
+const KEY='vts_data_v1';
+function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function freshData(){return {profile:{name:'Водитель VTS',firstName:'',lastName:'',experience:'',company:'Моя транспортная компания',position:'Водитель',country:'',bio:'',rating:5,ratings:[],joined:todayKey()},trips:[],orders:[],transactions:[],balance:0}}
+function loadData(){try{const saved=localStorage.getItem(KEY);if(!saved)return freshData();const d={...freshData(),...JSON.parse(saved)};d.profile={...freshData().profile,...(d.profile||{})};d.trips=Array.isArray(d.trips)?d.trips:[];d.orders=Array.isArray(d.orders)?d.orders:[];d.transactions=Array.isArray(d.transactions)?d.transactions:[];d.profile.ratings=Array.isArray(d.profile.ratings)?d.profile.ratings:[];return d}catch(e){return freshData()}}
+let data=loadData(),page='home';
+function saveData(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){alert('Не удалось сохранить данные на устройстве.')}}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function money(n){return new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:0}).format(Number(n)||0)}
+function distance(){return data.trips.reduce((s,t)=>s+(Number(t.distance)||0),0)}
+function earnings(){return data.trips.reduce((s,t)=>s+(Number(t.net)||0),0)}
+function dateKey(v){if(!v)return '';const s=String(v);if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;const d=new Date(s);return Number.isNaN(d.getTime())?'':`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function todayTrips(){return data.trips.filter(t=>dateKey(t.date)===todayKey())}
+function showPage(next){page=next;toggleMenu(false);document.querySelectorAll('.drawer-link').forEach(b=>b.classList.toggle('active',b.dataset.page===page));render();window.scrollTo(0,0)}
+function toggleMenu(open){document.getElementById('drawer').classList.toggle('open',open);document.getElementById('overlay').classList.toggle('open',open);document.body.style.overflow=open?'hidden':''}
+function empty(m){return `<div class="empty">${m}</div>`}
+function tripList(){if(!data.trips.length)return empty('Завершённых рейсов пока нет.<br>Добавь первый рейс, чтобы начать историю.');return data.trips.slice().reverse().map(t=>`<div class="item"><div class="row"><div class="item-title">${esc(t.from)} → ${esc(t.to)}</div><button class="danger small-button" onclick="deleteTrip('${t.id}')">Удалить</button></div><div class="item-sub">${esc(t.date)} · ${Number(t.distance)||0} км · ${esc(t.cargo||'Груз не указан')}</div><div class="row" style="margin-top:9px"><span class="muted">Чистый доход</span><b>${money(t.net)}</b></div></div>`).join('')}
+function orderList(){if(!data.orders.length)return empty('Заказов пока нет.<br>Создай первый заказ ниже.');return data.orders.slice().reverse().map(o=>`<div class="item"><div class="row"><div class="item-title">${esc(o.from)} → ${esc(o.to)}</div><button class="secondary small-button" onclick="completeOrder('${o.id}')">Завершить</button></div><div class="item-sub">${esc(o.date)} · ${esc(o.cargo||'Груз не указан')} · ${Number(o.distance)||0} км</div><div class="row" style="margin-top:8px"><b>${money(o.pay)}</b><button class="danger small-button" onclick="deleteOrder('${o.id}')">Отменить</button></div></div>`).join('')}
+function bankList(){if(!data.transactions.length)return empty('Операций пока нет.');return data.transactions.slice().reverse().map(t=>`<div class="item"><div class="row"><div><div class="item-title">${esc(t.title)}</div><div class="item-sub">${esc(t.date)}</div></div><b style="color:${t.amount>=0?'var(--green)':'#ff8796'}">${t.amount>=0?'+':''}${money(t.amount)}</b></div></div>`).join('')}
+function profileName(){const p=data.profile;return [p.firstName,p.lastName].filter(Boolean).join(' ').trim()||p.name||'Водитель VTS'}
+function avgRating(){const a=(data.profile.ratings||[]).map(x=>Number(x.rating)).filter(x=>x>=1&&x<=5);return a.length?a.reduce((s,x)=>s+x,0)/a.length:Number(data.profile.rating)||0}
+function periodDates(period){const now=new Date(),out=[],count=period==='year'?12:period==='month'?30:7;for(let i=count-1;i>=0;i--){const d=new Date(now);if(period==='year')d.setMonth(now.getMonth()-i,1);else d.setDate(now.getDate()-i);out.push(d)}return out}
+function chartData(kind,period){return periodDates(period).map(d=>{const arr=period==='year'?data.trips.filter(t=>{const x=new Date((dateKey(t.date)||'2000-01-01')+'T12:00:00');return x.getFullYear()===d.getFullYear()&&x.getMonth()===d.getMonth()}):data.trips.filter(t=>dateKey(t.date)===dateKey(d));return {label:period==='year'?d.toLocaleDateString('ru-RU',{month:'short'}):d.toLocaleDateString('ru-RU',{weekday:'short'}).replace('.',''),value:arr.reduce((s,t)=>s+(Number(kind==='km'?t.distance:t.net)||0),0)}})}
+function compactMoney(n){n=Number(n)||0;if(n>=1000000)return (n/1e6).toLocaleString('ru-RU',{maximumFractionDigits:1})+'м';if(n>=1000)return (n/1000).toLocaleString('ru-RU',{maximumFractionDigits:1})+'к';return Math.round(n).toString()}
+function periodSum(kind,period){return chartData(kind,period).reduce((s,x)=>s+x.value,0)}
+function renderBars(kind,period){const items=chartData(kind,period),max=Math.max(...items.map(x=>x.value),1);return `<div class="bar-chart">${items.map(x=>`<div class="bar-col"><div class="bar-value">${kind==='km'?Math.round(x.value).toLocaleString('ru-RU'):compactMoney(x.value)}</div><div class="bar-track"><div class="bar-fill" style="height:${Math.max(3,x.value/max*100)}%"></div></div><div class="bar-label">${esc(x.label)}</div></div>`).join('')}</div>`}
+function setChartPeriod(p){data.profile.chartPeriod=p;render()}
+function rateTrip(id,rating){const t=data.trips.find(x=>String(x.id)===String(id));if(!t)return;data.profile.ratings=data.profile.ratings||[];const old=data.profile.ratings.find(x=>String(x.tripId)===String(id));if(old)old.rating=rating;else data.profile.ratings.push({tripId:id,rating,date:dateKey(t.date)});saveData();render()}
+function achievements(){const km=distance(),count=data.trips.length,net=earnings();return [{icon:'🚛',title:'Первый рейс',sub:'Заверши первый рейс',done:count>=1},{icon:'🛣️',title:'Первые 1 000 км',sub:'Накопи 1 000 км пробега',done:km>=1000},{icon:'🏅',title:'10 завершённых рейсов',sub:'Построй историю перевозок',done:count>=10},{icon:'💰',title:'Первый миллион',sub:'Получи 1 000 000 ₽ чистого дохода',done:net>=1000000},{icon:'🌍',title:'Дальнобойщик 10 000 км',sub:'Преодолей 10 000 км',done:km>=10000}]}
+function profileRecentTrips(){if(!data.trips.length)return empty('Здесь появятся последние рейсы.');return data.trips.slice().reverse().slice(0,5).map(t=>{const rr=(data.profile.ratings||[]).find(x=>String(x.tripId)===String(t.id));return `<div class="recent-trip"><div class="row"><div class="item-title">${esc(t.from)} → ${esc(t.to)}</div><b>${money(t.net)}</b></div><div class="item-sub">${esc(t.date)} · ${Number(t.distance)||0} км · ${esc(t.cargo||'Груз не указан')}</div><div class="row" style="margin-top:9px"><span class="muted">Оценка рейса</span><span style="color:#ffd36b">${rr?'★'.repeat(rr.rating)+'☆'.repeat(5-rr.rating):'Не оценён'}</span></div><div class="rating-stars">${[1,2,3,4,5].map(n=>`<button type="button" class="${rr&&rr.rating===n?'selected':''}" onclick="rateTrip('${String(t.id).replace(/'/g,"\\'")}',${n})">★</button>`).join('')}</div></div>`}).join('')}
+function render(){
+ const app=document.getElementById('app');
+ if(page==='home'){
+  const todays=todayTrips(),todayKm=todays.reduce((s,t)=>s+(Number(t.distance)||0),0),todayNet=todays.reduce((s,t)=>s+(Number(t.net)||0),0);
+  app.innerHTML=`<div class="eyebrow">ПАНЕЛЬ ВОДИТЕЛЯ · ETS2</div><h1>Главная</h1><div class="description">Добро пожаловать, ${esc(profileName())}. Здесь собраны события и результаты рабочего дня.</div><div class="section-title">Сводка за сегодня</div><div class="cards"><div class="card"><div class="card-icon">🛣️</div><div class="card-label">Пробег сегодня</div><div class="card-value">${todayKm.toLocaleString('ru-RU')} км</div></div><div class="card"><div class="card-icon">✓</div><div class="card-label">Завершено рейсов</div><div class="card-value">${todays.length}</div></div><div class="card"><div class="card-icon">💰</div><div class="card-label">Заработок сегодня</div><div class="card-value">${money(todayNet)}</div></div><div class="card"><div class="card-icon">◷</div><div class="card-label">Активные заказы</div><div class="card-value">${data.orders.length}</div></div></div><div class="section-title">Активный заказ</div><div class="panel">${data.orders.length?orderList():empty('Активных заказов нет. Перейди в диспетчерскую, чтобы создать заказ.') }<button class="secondary full" onclick="showPage('orders')">Открыть диспетчерскую</button></div><div class="section-title">Последние события</div><div class="panel">${data.trips.length?data.trips.slice(-3).reverse().map(t=>`<div class="news-item"><div class="news-icon">✓</div><div class="news-text"><b>${esc(t.from)} → ${esc(t.to)}</b><div class="muted">${Number(t.distance)||0} км · ${money(t.net)}</div><div class="news-time">${esc(t.date)}</div></div></div>`).join(''):empty('Здесь появятся завершённые рейсы и начисления.')}</div>`;
+ }else if(page==='trips'){
+  app.innerHTML=`<div class="eyebrow">ЖУРНАЛ ПЕРЕВОЗОК</div><h1>История рейсов</h1><div class="description">Записывай маршруты, пробег и доходы поездок.</div><div class="section-title">Новый завершённый рейс</div><form class="panel" onsubmit="addTrip(event)"><div class="form-grid"><div><label>Откуда</label><input name="from" required placeholder="Берлин"></div><div><label>Куда</label><input name="to" required placeholder="Прага"></div></div><div class="form-grid"><div><label>Дата</label><input name="date" type="date" required></div><div><label>Расстояние, км</label><input name="distance" type="number" min="0" required placeholder="350"></div></div><label>Груз</label><input name="cargo" placeholder="Например, продукты"><div class="form-grid"><div><label>Доход, ₽</label><input name="gross" type="number" min="0" required placeholder="50000"></div><div><label>Комиссия, %</label><input name="fee" type="number" min="0" max="100" value="10" required></div></div><label><input name="credit" type="checkbox" style="width:auto;margin-right:7px">Зачислить чистый доход в банк</label><button class="primary full" type="submit">Сохранить рейс</button></form><div class="section-title">Все рейсы · ${data.trips.length}</div><div class="panel">${tripList()}</div>`;
+  app.querySelector('[name="date"]').value=todayKey();
+ }else if(page==='orders'){
+  app.innerHTML=`<div class="eyebrow">ПЛАНИРОВАНИЕ ПЕРЕВОЗОК</div><h1>Диспетчерская</h1><div class="description">Создавай заказы и завершай их после доставки груза.</div><div class="section-title">Новый заказ</div><form class="panel" onsubmit="addOrder(event)"><div class="form-grid"><div><label>Откуда</label><input name="from" required placeholder="Город загрузки"></div><div><label>Куда</label><input name="to" required placeholder="Город доставки"></div></div><label>Дата доставки</label><input name="date" type="date" required><label>Груз</label><input name="cargo" placeholder="Тип груза"><div class="form-grid"><div><label>Расстояние, км</label><input name="distance" type="number" min="0" required></div><div><label>Оплата, ₽</label><input name="pay" type="number" min="0" required></div></div><button class="primary full" type="submit">＋ Создать заказ</button></form><div class="section-title">Запланированные заказы · ${data.orders.length}</div><div class="panel">${orderList()}</div>`;
+ }else if(page==='bank'){
+  app.innerHTML=`<div class="eyebrow">ВИРТУАЛЬНЫЕ ФИНАНСЫ</div><h1>Банк</h1><div class="card"><div class="card-label">Текущий баланс</div><div class="card-value">${money(data.balance)}</div><div class="notice">Виртуальные средства VTS, не настоящий банковский счёт.</div></div><div class="section-title">Пополнение баланса</div><form class="panel" onsubmit="deposit(event)"><label>Сумма, ₽</label><input name="amount" type="number" min="1" required placeholder="10000"><label>Описание</label><input name="title" placeholder="Начальный капитал"><button class="primary full" type="submit">Пополнить счёт</button></form><div class="section-title">История операций</div><div class="panel">${bankList()}</div>`;
+ }else{
+  const p=data.profile,allTrips=data.trips.length,km=distance(),net=earnings(),gross=data.trips.reduce((s,t)=>s+(Number(t.gross)||Number(t.net)||0),0),avgKm=allTrips?km/allTrips:0,avgNet=allTrips?net/allTrips:0,rate=avgRating(),rated=(p.ratings||[]).length,now=new Date(),monthTrips=data.trips.filter(t=>{const d=new Date((dateKey(t.date)||'2000-01-01')+'T12:00:00');return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()}),todayNet=todayTrips().reduce((s,t)=>s+(Number(t.net)||0),0),todayKm=todayTrips().reduce((s,t)=>s+(Number(t.distance)||0),0),monthNet=monthTrips.reduce((s,t)=>s+(Number(t.net)||0),0),monthKm=monthTrips.reduce((s,t)=>s+(Number(t.distance)||0),0),period=p.chartPeriod||'week',periodLabel=period==='week'?'7 дней':period==='month'?'30 дней':'12 месяцев';
+  app.innerHTML=`<div class="eyebrow">ЛИЧНЫЙ КАБИНЕТ · VTS DRIVER ID</div><div class="profile-hero"><div class="profile-top"><div class="avatar">${esc(profileName().split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0].toUpperCase()).join('')||'V')}</div><div style="min-width:0;flex:1"><div class="profile-name">${esc(profileName())}</div><div class="profile-meta">${esc(p.position||'Водитель')} · ${esc(p.country||'Страна не указана')}</div><div class="rating-pill">★ ${rate?rate.toFixed(1):'—'} <span style="font-weight:500;opacity:.8">/ 5 · ${rated} оценок</span></div></div><button class="edit-icon" onclick="toggleProfileEdit()">✎</button></div><div class="profile-tags"><span class="profile-tag">▣ ${esc(p.company||'Без компании')}</span><span class="profile-tag">◷ Стаж: ${esc(p.experience||'Не указан')}</span><span class="profile-tag">✓ VTS Driver</span></div><div class="profile-meta" style="margin-top:15px">${esc(p.bio||'Твоя виртуальная карьера дальнобойщика — рейсы, достижения и финансовые результаты в одном месте.')}</div></div>
+  <div class="profile-edit" id="profileEdit"><form class="panel" onsubmit="saveProfile(event)"><div class="profile-section-head"><b>Редактирование профиля</b><button class="secondary small-button" type="button" onclick="toggleProfileEdit()">Закрыть</button></div><div class="form-grid"><div><label>Имя</label><input name="firstName" value="${esc(p.firstName||'')}" placeholder="Имя"></div><div><label>Фамилия</label><input name="lastName" value="${esc(p.lastName||'')}" placeholder="Фамилия"></div></div><label>Отображаемое имя</label><input name="name" value="${esc(p.name||'')}" placeholder="Водитель VTS"><label>Транспортная компания</label><input name="company" value="${esc(p.company||'')}"><div class="form-grid"><div><label>Должность</label><input name="position" value="${esc(p.position||'')}"></div><div><label>Водительский стаж</label><input name="experience" value="${esc(p.experience||'')}"></div></div><label>Страна / регион</label><input name="country" value="${esc(p.country||'')}"><label>О себе</label><textarea name="bio" rows="3">${esc(p.bio||'')}</textarea><button class="primary full" type="submit">Сохранить изменения</button></form></div>
+  <div class="section-title">Карьерная статистика</div><div class="profile-stats"><div class="stat-tile"><div class="stat-symbol">📦</div><div class="stat-label">Завершено рейсов</div><div class="stat-number">${allTrips}</div><div class="stat-foot">${monthTrips.length} в этом месяце</div></div><div class="stat-tile"><div class="stat-symbol">🛣️</div><div class="stat-label">Общий пробег</div><div class="stat-number">${km.toLocaleString('ru-RU')} км</div><div class="stat-foot">В среднем ${Math.round(avgKm).toLocaleString('ru-RU')} км / рейс</div></div><div class="stat-tile"><div class="stat-symbol">💰</div><div class="stat-label">Чистый доход</div><div class="stat-number">${money(net)}</div><div class="stat-foot">После комиссии</div></div><div class="stat-tile"><div class="stat-symbol">📈</div><div class="stat-label">Средний доход с рейса</div><div class="stat-number">${money(avgNet)}</div><div class="stat-foot">По завершённым рейсам</div></div><div class="stat-tile"><div class="stat-symbol">🧾</div><div class="stat-label">Доход до комиссии</div><div class="stat-number">${money(gross)}</div><div class="stat-foot">Начисления по рейсам</div></div><div class="stat-tile"><div class="stat-symbol">🎯</div><div class="stat-label">Активные заказы</div><div class="stat-number">${data.orders.length}</div><div class="stat-foot">В диспетчерской</div></div><div class="stat-tile"><div class="stat-symbol">📅</div><div class="stat-label">Доход сегодня</div><div class="stat-number">${money(todayNet)}</div><div class="stat-foot">Пробег: ${todayKm.toLocaleString('ru-RU')} км</div></div><div class="stat-tile"><div class="stat-symbol">🗓️</div><div class="stat-label">Доход за месяц</div><div class="stat-number">${money(monthNet)}</div><div class="stat-foot">Пробег: ${monthKm.toLocaleString('ru-RU')} км</div></div><div class="stat-tile"><div class="stat-symbol">⭐</div><div class="stat-label">Рейтинг водителя</div><div class="stat-number">${rate?rate.toFixed(1)+' / 5':'—'}</div><div class="stat-foot">Оценено рейсов: ${rated}</div></div></div>
+  <div class="section-title">Аналитика карьеры</div><div class="chart-panel"><div class="chart-head"><div><div class="chart-title">Чистый заработок</div><div class="chart-total">${money(periodSum('money',period))}</div><div class="muted">За период: ${periodLabel}</div></div><span style="font-size:24px">💵</span></div><div class="period-switch"><button class="${period==='week'?'active':''}" onclick="setChartPeriod('week')">7 дней</button><button class="${period==='month'?'active':''}" onclick="setChartPeriod('month')">30 дней</button><button class="${period==='year'?'active':''}" onclick="setChartPeriod('year')">12 мес.</button></div>${renderBars('money',period)}<div class="chart-legend"><span class="legend-dot"></span>Чистый доход по рейсам</div></div>
+  <div class="chart-panel"><div class="chart-head"><div><div class="chart-title">Пробег</div><div class="chart-total">${Math.round(periodSum('km',period)).toLocaleString('ru-RU')} км</div><div class="muted">За период: ${periodLabel}</div></div><span style="font-size:24px">🛣️</span></div>${renderBars('km',period)}<div class="chart-legend"><span class="legend-dot"></span>Километры по дате рейса</div></div>
+  <div class="section-title">Достижения</div><div class="panel">${achievements().map(a=>`<div class="achievement"><div class="achievement-icon">${a.icon}</div><div style="min-width:0"><div class="achievement-title">${a.title}</div><div class="achievement-sub">${a.sub}</div></div><div class="achievement-state">${a.done?'✓ Получено':'В процессе'}</div></div>`).join('')}</div><div class="section-title">Последние рейсы</div><div class="panel">${profileRecentTrips()}</div><div class="section-title">Резервная копия</div><div class="panel"><button class="secondary full" onclick="exportData()">Экспортировать данные JSON</button><label>Восстановить из JSON-файла</label><input type="file" accept=".json,application/json" onchange="importData(event)"><div class="notice">Данные сохраняются в браузере этого устройства. Профиль и статистика обновляются из записей VTS.</div></div>`;
+ }
+}
+function addTrip(e){e.preventDefault();const f=new FormData(e.target),gross=Number(f.get('gross'))||0,fee=Number(f.get('fee'))||0,net=gross-gross*fee/100,t={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),from:f.get('from'),to:f.get('to'),date:f.get('date'),distance:Number(f.get('distance')),cargo:f.get('cargo'),gross,fee,net};data.trips.push(t);if(f.get('credit')){data.balance+=net;data.transactions.push({id:String(Date.now()),title:'Доход за рейс: '+t.from+' — '+t.to,date:t.date,amount:net})}saveData();showPage('trips')}
+function deleteTrip(id){if(!confirm('Удалить этот рейс?'))return;data.trips=data.trips.filter(t=>String(t.id)!==String(id));saveData();render()}
+function addOrder(e){e.preventDefault();const f=new FormData(e.target);data.orders.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),from:f.get('from'),to:f.get('to'),date:f.get('date'),cargo:f.get('cargo'),distance:Number(f.get('distance')),pay:Number(f.get('pay'))});saveData();showPage('orders')}
+function deleteOrder(id){if(!confirm('Отменить этот заказ?'))return;data.orders=data.orders.filter(o=>String(o.id)!==String(id));saveData();render()}
+function completeOrder(id){const o=data.orders.find(x=>String(x.id)===String(id));if(!o)return;if(!confirm('Перенести заказ в историю рейсов? Комиссия составит 10%.'))return;const gross=Number(o.pay)||0,fee=10,net=gross-gross*fee/100;data.trips.push({...o,id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),gross,fee,net});data.orders=data.orders.filter(x=>String(x.id)!==String(id));data.balance+=net;data.transactions.push({id:String(Date.now()),title:'Доход за заказ: '+o.from+' — '+o.to,date:o.date,amount:net});saveData();showPage('trips')}
+function deposit(e){e.preventDefault();const f=new FormData(e.target),amount=Number(f.get('amount'));if(amount<=0)return;data.balance+=amount;data.transactions.push({id:String(Date.now()),title:f.get('title')||'Пополнение виртуального счёта',date:todayKey(),amount});saveData();render()}
+function toggleProfileEdit(){const el=document.getElementById('profileEdit');if(el)el.classList.toggle('open')}
+function saveProfile(e){e.preventDefault();const f=new FormData(e.target);data.profile={...data.profile,firstName:String(f.get('firstName')||'').trim(),lastName:String(f.get('lastName')||'').trim(),name:String(f.get('name')||'').trim(),company:String(f.get('company')||'').trim(),position:String(f.get('position')||'').trim(),experience:String(f.get('experience')||'').trim(),country:String(f.get('country')||'').trim(),bio:String(f.get('bio')||'').trim()};saveData();render()}
+function exportData(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='VTS-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function importData(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const x=JSON.parse(reader.result);if(!x.profile||!Array.isArray(x.trips)||!Array.isArray(x.orders)||!Array.isArray(x.transactions))throw Error();if(!confirm('Заменить текущие данные резервной копией?'))return;data=x;saveData();showPage('profile');alert('Данные восстановлены.')}catch(err){alert('Не удалось прочитать резервную копию VTS.')}};reader.readAsText(file)}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')toggleMenu(false)});
+render();
 </script>
 </body>
 </html>
