@@ -27,6 +27,13 @@ button,a{font:inherit}a{color:inherit;text-decoration:none}button{cursor:pointer
 .main{min-width:0}
 .topbar{height:72px;display:flex;align-items:center;justify-content:flex-end;gap:22px;padding:0 26px;border-bottom:1px solid #14375d;background:rgba(3,14,29,.78)}
 .top-status{color:var(--green);font-size:12px;white-space:nowrap}
+.bell-wrap{position:relative;display:flex;align-items:center}
+.bell-btn{position:relative;width:38px;height:38px;border-radius:10px;border:1px solid #1b4774;background:#071a33;color:#dcecff;font-size:20px;display:grid;place-items:center}
+.bell-btn:hover{border-color:#39a1ff;background:#0b2749}
+.bell-count{position:absolute;right:-4px;top:-5px;min-width:17px;height:17px;border-radius:20px;background:#ff5268;color:#fff;font-size:10px;font-weight:800;display:none;place-items:center;padding:0 4px;border:2px solid #041124}
+.notifications{position:absolute;right:0;top:47px;width:min(330px,calc(100vw - 28px));background:#071a33;border:1px solid #205184;border-radius:12px;box-shadow:0 16px 40px #0009;z-index:30;display:none;overflow:hidden}
+.notifications.open{display:block}.notifications-head{display:flex;justify-content:space-between;align-items:center;padding:13px;border-bottom:1px solid #15395e;font-weight:800}
+.notifications-head button{border:0;background:transparent;color:#59b4ff;font-size:11px}.notification-list{max-height:320px;overflow:auto}.notification-item{padding:12px 13px;border-bottom:1px solid #102f51}.notification-item:last-child{border-bottom:0}.notification-item strong{display:block;font-size:12px}.notification-item p{margin:4px 0;color:#a7c5e8;font-size:11px}.notification-item time{font-size:10px;color:#7399c6}.notification-empty{padding:18px;color:#89a9d0;font-size:12px;text-align:center}
 .profile-chip{display:flex;align-items:center;gap:10px;border-left:1px solid #15395e;padding-left:20px}
 .avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#137eff,#0a315a);border:1px solid #3caaff;font-size:17px;font-weight:800;overflow:hidden}
 .avatar img{width:100%;height:100%;object-fit:cover}
@@ -103,19 +110,25 @@ button,a{font:inherit}a{color:inherit;text-decoration:none}button{cursor:pointer
       <div class="brand-sub">VIRTUAL TRANSPORT SYSTEM</div>
     </a>
     <nav class="nav" aria-label="Главное меню">
-      <a class="active" href="home.html"><span class="nav-icon">⌂</span>Главная</a>
-      <a href="trips.html"><span class="nav-icon">🚚</span>Рейсы</a>
-      <a href="map.html"><span class="nav-icon">◇</span>Карта</a>
-      <a href="garage.html"><span class="nav-icon">▣</span>Гараж</a>
       <a href="profile.html"><span class="nav-icon">♟</span>Профиль</a>
-      <a href="settings.html"><span class="nav-icon">⚙</span>Настройки</a>
+      <a class="active" href="home.html"><span class="nav-icon">⌂</span>Главное меню</a>
+      <a href="dispatcher.html"><span class="nav-icon">📋</span>Диспетчер</a>
+      <a href="history.html"><span class="nav-icon">🕘</span>История поездок</a>
+      <a href="vtc.html"><span class="nav-icon">🏢</span>VTC</a>
+      <a href="bank.html"><span class="nav-icon">₽</span>Банк</a>
     </nav>
     <div class="sidebar-bottom">VTS — Virtual Transport System<br>Персональная карьера водителя<br><br>Версия 1.0.0</div>
   </aside>
 
   <main class="main">
     <header class="topbar">
-      <span title="Уведомления">♧</span>
+      <div class="bell-wrap">
+        <button class="bell-btn" id="notificationBell" aria-label="Уведомления" aria-expanded="false" title="Уведомления">♧<span class="bell-count" id="notificationCount">0</span></button>
+        <section class="notifications" id="notificationsPanel" aria-label="Уведомления">
+          <div class="notifications-head"><span>Уведомления</span><button id="markNotificationsRead">Отметить прочитанными</button></div>
+          <div class="notification-list" id="notificationList"></div>
+        </section>
+      </div>
       <span class="top-status">● Онлайн</span>
       <a class="profile-chip" href="profile.html">
         <div class="avatar" id="topAvatar">В</div>
@@ -129,13 +142,13 @@ button,a{font:inherit}a{color:inherit;text-decoration:none}button{cursor:pointer
           <div class="eyebrow">Добро пожаловать в</div>
           <h1>VTS</h1>
           <p>Реальные дороги. Настоящие эмоции.</p>
-          <a class="primary" href="trips.html">▶ &nbsp; Начать рейс &nbsp; →</a>
+          <a class="primary" href="dispatcher.html">▶ &nbsp; Начать рейс &nbsp; →</a>
         </div>
       </section>
 
       <section class="quick-grid" aria-label="Быстрые действия">
-        <a class="quick" href="trips.html"><div class="quick-icon">▶</div><div><strong>Быстрый старт</strong><small>Начать новый рейс</small></div></a>
-        <a class="quick" href="trips.html"><div class="quick-icon">▦</div><div><strong>Выбор груза</strong><small>Доступные заказы</small></div></a>
+        <a class="quick" href="dispatcher.html"><div class="quick-icon">▶</div><div><strong>Быстрый старт</strong><small>Начать новый рейс</small></div></a>
+        <a class="quick" href="dispatcher.html"><div class="quick-icon">▦</div><div><strong>Выбор груза</strong><small>Доступные заказы</small></div></a>
         <a class="quick" href="map.html"><div class="quick-icon">◧</div><div><strong>Карта мира</strong><small>Открыть карту</small></div></a>
         <a class="quick" href="garage.html"><div class="quick-icon">▣</div><div><strong>Мой гараж</strong><small>Техника и прицепы</small></div></a>
       </section>
@@ -168,7 +181,7 @@ button,a{font:inherit}a{color:inherit;text-decoration:none}button{cursor:pointer
           </article>
 
           <article class="panel">
-            <div class="panel-head"><div class="panel-title"><span>🚚</span>Текущий рейс</div><a class="link" href="trips.html">Открыть →</a></div>
+            <div class="panel-head"><div class="panel-title"><span>🚚</span>Текущий рейс</div><a class="link" href="dispatcher.html">Открыть →</a></div>
             <div id="currentTrip"><div class="empty">Сейчас нет активного рейса. Можно выбрать новый заказ.</div></div>
           </article>
         </div>
@@ -180,7 +193,7 @@ button,a{font:inherit}a{color:inherit;text-decoration:none}button{cursor:pointer
           </article>
 
           <article class="panel">
-            <div class="panel-head"><div class="panel-title"><span>🚚</span>Последние рейсы</div><a class="link" href="trips.html">Все →</a></div>
+            <div class="panel-head"><div class="panel-title"><span>🚚</span>Последние рейсы</div><a class="link" href="history.html">Все →</a></div>
             <div class="recent-list" id="recentTrips"></div>
           </article>
 
@@ -240,6 +253,19 @@ button,a{font:inherit}a{color:inherit;text-decoration:none}button{cursor:pointer
     const el = $('notice'); el.textContent = message; el.style.display='block';
     clearTimeout(showNotice.timer); showNotice.timer=setTimeout(()=>el.style.display='none',3200);
   }
+  const NOTIFICATIONS_KEY='vts_notifications_v1';
+  const readNotifications=()=>{try{const value=JSON.parse(localStorage.getItem(NOTIFICATIONS_KEY)||'[]');return Array.isArray(value)?value:[]}catch(_){return[]}};
+  function renderNotifications(){
+    const list=readNotifications();
+    const unread=list.filter(n=>!n.read).length;
+    $('notificationCount').textContent=unread>99?'99+':String(unread);
+    $('notificationCount').style.display=unread?'grid':'none';
+    $('notificationList').innerHTML=list.length?list.slice().reverse().map(n=>`<article class="notification-item"><strong>${escapeHtml(n.title||'Уведомление')}</strong><p>${escapeHtml(n.message||'Новое уведомление VTS')}</p><time>${escapeHtml(n.date||'VTS')}</time></article>`).join(''):'<div class="notification-empty">Пока уведомлений нет.<br>Здесь будут появляться сообщения о рейсах и обновлениях VTS.</div>';
+  }
+  function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  $('notificationBell').addEventListener('click',()=>{const panel=$('notificationsPanel');const open=!panel.classList.contains('open');panel.classList.toggle('open',open);$('notificationBell').setAttribute('aria-expanded',String(open));});
+  $('markNotificationsRead').addEventListener('click',()=>{const list=readNotifications().map(n=>({...n,read:true}));localStorage.setItem(NOTIFICATIONS_KEY,JSON.stringify(list));renderNotifications();});
+  document.addEventListener('click',event=>{if(!event.target.closest('.bell-wrap')){$('notificationsPanel').classList.remove('open');$('notificationBell').setAttribute('aria-expanded','false');}});
   function initials(name) {
     const parts=String(name||'Новый водитель').trim().split(/\s+/).filter(Boolean);
     return parts.slice(0,2).map(p=>p[0]).join('').toUpperCase() || 'В';
@@ -305,9 +331,9 @@ button,a{font:inherit}a{color:inherit;text-decoration:none}button{cursor:pointer
   function renderCurrentTrip() {
     const active=trips.find(t=>!isDone(t) && ['active','in_progress','in progress','в пути','активен','выполняется'].includes(String(t.status||t.state||'').toLowerCase()));
     if(!active){$('currentTrip').innerHTML='<div class="empty">Сейчас нет активного рейса. Можно выбрать новый заказ.</div>';return;}
-    $('currentTrip').innerHTML=`<div class="current-trip"><div class="trip-art">🚛</div><div class="trip-info"><strong>${text(active.from||active.origin,'Отправление')} → ${text(active.to||active.destination,'Назначение')}</strong><small>${text(active.cargo||active.freight,'Груз не указан')}</small><div class="trip-meta"><span>Пробег: ${number(distanceOf(active))} км</span><span>Оплата: ${money(incomeOf(active))}</span></div></div><a class="link" href="trips.html">Подробнее →</a></div>`;
+    $('currentTrip').innerHTML=`<div class="current-trip"><div class="trip-art">🚛</div><div class="trip-info"><strong>${text(active.from||active.origin,'Отправление')} → ${text(active.to||active.destination,'Назначение')}</strong><small>${text(active.cargo||active.freight,'Груз не указан')}</small><div class="trip-meta"><span>Пробег: ${number(distanceOf(active))} км</span><span>Оплата: ${money(incomeOf(active))}</span></div></div><a class="link" href="dispatcher.html">Подробнее →</a></div>`;
   }
-  renderNews();renderStats(period);renderChart();renderRecent();renderAchievements();renderCurrentTrip();
+  renderNews();renderStats(period);renderChart();renderRecent();renderAchievements();renderCurrentTrip();renderNotifications();
   $('allNews').addEventListener('click',event=>{event.preventDefault();showNotice('Новости VTS будут доступны в этом разделе после подключения страницы новостей.');});
   function updateClock(){
     const d=new Date();
