@@ -134,68 +134,544 @@ label{display:block;font-size:13px;color:var(--muted);margin-top:14px}
 </aside>
 <main id="app"></main>
 <script>
-const KEY='vts_data_v1';
-function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-function freshData(){return {profile:{name:'Водитель VTS',firstName:'',lastName:'',experience:'',company:'Моя транспортная компания',position:'Водитель',country:'',bio:'',rating:5,ratings:[],joined:todayKey()},trips:[],orders:[],transactions:[],balance:0}}
-function loadData(){try{const saved=localStorage.getItem(KEY);if(!saved)return freshData();const d={...freshData(),...JSON.parse(saved)};d.profile={...freshData().profile,...(d.profile||{})};d.trips=Array.isArray(d.trips)?d.trips:[];d.orders=Array.isArray(d.orders)?d.orders:[];d.transactions=Array.isArray(d.transactions)?d.transactions:[];d.profile.ratings=Array.isArray(d.profile.ratings)?d.profile.ratings:[];return d}catch(e){return freshData()}}
-let data=loadData(),page='home';
-function saveData(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){alert('Не удалось сохранить данные на устройстве.')}}
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function money(n){return new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:0}).format(Number(n)||0)}
-function distance(){return data.trips.reduce((s,t)=>s+(Number(t.distance)||0),0)}
-function earnings(){return data.trips.reduce((s,t)=>s+(Number(t.net)||0),0)}
-function dateKey(v){if(!v)return '';const s=String(v);if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;const d=new Date(s);return Number.isNaN(d.getTime())?'':`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-function todayTrips(){return data.trips.filter(t=>dateKey(t.date)===todayKey())}
-function showPage(next){page=next;toggleMenu(false);document.querySelectorAll('.drawer-link').forEach(b=>b.classList.toggle('active',b.dataset.page===page));render();window.scrollTo(0,0)}
-function toggleMenu(open){document.getElementById('drawer').classList.toggle('open',open);document.getElementById('overlay').classList.toggle('open',open);document.body.style.overflow=open?'hidden':''}
-function empty(m){return `<div class="empty">${m}</div>`}
-function tripList(){if(!data.trips.length)return empty('Завершённых рейсов пока нет.<br>Добавь первый рейс, чтобы начать историю.');return data.trips.slice().reverse().map(t=>`<div class="item"><div class="row"><div class="item-title">${esc(t.from)} → ${esc(t.to)}</div><button class="danger small-button" onclick="deleteTrip('${t.id}')">Удалить</button></div><div class="item-sub">${esc(t.date)} · ${Number(t.distance)||0} км · ${esc(t.cargo||'Груз не указан')}</div><div class="row" style="margin-top:9px"><span class="muted">Чистый доход</span><b>${money(t.net)}</b></div></div>`).join('')}
-function orderList(){if(!data.orders.length)return empty('Заказов пока нет.<br>Создай первый заказ ниже.');return data.orders.slice().reverse().map(o=>`<div class="item"><div class="row"><div class="item-title">${esc(o.from)} → ${esc(o.to)}</div><button class="secondary small-button" onclick="completeOrder('${o.id}')">Завершить</button></div><div class="item-sub">${esc(o.date)} · ${esc(o.cargo||'Груз не указан')} · ${Number(o.distance)||0} км</div><div class="row" style="margin-top:8px"><b>${money(o.pay)}</b><button class="danger small-button" onclick="deleteOrder('${o.id}')">Отменить</button></div></div>`).join('')}
-function bankList(){if(!data.transactions.length)return empty('Операций пока нет.');return data.transactions.slice().reverse().map(t=>`<div class="item"><div class="row"><div><div class="item-title">${esc(t.title)}</div><div class="item-sub">${esc(t.date)}</div></div><b style="color:${t.amount>=0?'var(--green)':'#ff8796'}">${t.amount>=0?'+':''}${money(t.amount)}</b></div></div>`).join('')}
-function profileName(){const p=data.profile;return [p.firstName,p.lastName].filter(Boolean).join(' ').trim()||p.name||'Водитель VTS'}
-function avgRating(){const a=(data.profile.ratings||[]).map(x=>Number(x.rating)).filter(x=>x>=1&&x<=5);return a.length?a.reduce((s,x)=>s+x,0)/a.length:Number(data.profile.rating)||0}
-function periodDates(period){const now=new Date(),out=[],count=period==='year'?12:period==='month'?30:7;for(let i=count-1;i>=0;i--){const d=new Date(now);if(period==='year')d.setMonth(now.getMonth()-i,1);else d.setDate(now.getDate()-i);out.push(d)}return out}
-function chartData(kind,period){return periodDates(period).map(d=>{const arr=period==='year'?data.trips.filter(t=>{const x=new Date((dateKey(t.date)||'2000-01-01')+'T12:00:00');return x.getFullYear()===d.getFullYear()&&x.getMonth()===d.getMonth()}):data.trips.filter(t=>dateKey(t.date)===dateKey(d));return {label:period==='year'?d.toLocaleDateString('ru-RU',{month:'short'}):d.toLocaleDateString('ru-RU',{weekday:'short'}).replace('.',''),value:arr.reduce((s,t)=>s+(Number(kind==='km'?t.distance:t.net)||0),0)}})}
-function compactMoney(n){n=Number(n)||0;if(n>=1000000)return (n/1e6).toLocaleString('ru-RU',{maximumFractionDigits:1})+'м';if(n>=1000)return (n/1000).toLocaleString('ru-RU',{maximumFractionDigits:1})+'к';return Math.round(n).toString()}
-function periodSum(kind,period){return chartData(kind,period).reduce((s,x)=>s+x.value,0)}
-function renderBars(kind,period){const items=chartData(kind,period),max=Math.max(...items.map(x=>x.value),1);return `<div class="bar-chart">${items.map(x=>`<div class="bar-col"><div class="bar-value">${kind==='km'?Math.round(x.value).toLocaleString('ru-RU'):compactMoney(x.value)}</div><div class="bar-track"><div class="bar-fill" style="height:${Math.max(3,x.value/max*100)}%"></div></div><div class="bar-label">${esc(x.label)}</div></div>`).join('')}</div>`}
-function setChartPeriod(p){data.profile.chartPeriod=p;render()}
-function rateTrip(id,rating){const t=data.trips.find(x=>String(x.id)===String(id));if(!t)return;data.profile.ratings=data.profile.ratings||[];const old=data.profile.ratings.find(x=>String(x.tripId)===String(id));if(old)old.rating=rating;else data.profile.ratings.push({tripId:id,rating,date:dateKey(t.date)});saveData();render()}
-function achievements(){const km=distance(),count=data.trips.length,net=earnings();return [{icon:'🚛',title:'Первый рейс',sub:'Заверши первый рейс',done:count>=1},{icon:'🛣️',title:'Первые 1 000 км',sub:'Накопи 1 000 км пробега',done:km>=1000},{icon:'🏅',title:'10 завершённых рейсов',sub:'Построй историю перевозок',done:count>=10},{icon:'💰',title:'Первый миллион',sub:'Получи 1 000 000 ₽ чистого дохода',done:net>=1000000},{icon:'🌍',title:'Дальнобойщик 10 000 км',sub:'Преодолей 10 000 км',done:km>=10000}]}
-function profileRecentTrips(){if(!data.trips.length)return empty('Здесь появятся последние рейсы.');return data.trips.slice().reverse().slice(0,5).map(t=>{const rr=(data.profile.ratings||[]).find(x=>String(x.tripId)===String(t.id));return `<div class="recent-trip"><div class="row"><div class="item-title">${esc(t.from)} → ${esc(t.to)}</div><b>${money(t.net)}</b></div><div class="item-sub">${esc(t.date)} · ${Number(t.distance)||0} км · ${esc(t.cargo||'Груз не указан')}</div><div class="row" style="margin-top:9px"><span class="muted">Оценка рейса</span><span style="color:#ffd36b">${rr?'★'.repeat(rr.rating)+'☆'.repeat(5-rr.rating):'Не оценён'}</span></div><div class="rating-stars">${[1,2,3,4,5].map(n=>`<button type="button" class="${rr&&rr.rating===n?'selected':''}" onclick="rateTrip('${String(t.id).replace(/'/g,"\\'")}',${n})">★</button>`).join('')}</div></div>`}).join('')}
-function render(){
- const app=document.getElementById('app');
- if(page==='home'){
-  const todays=todayTrips(),todayKm=todays.reduce((s,t)=>s+(Number(t.distance)||0),0),todayNet=todays.reduce((s,t)=>s+(Number(t.net)||0),0);
-  app.innerHTML=`<div class="eyebrow">ПАНЕЛЬ ВОДИТЕЛЯ · ETS2</div><h1>Главная</h1><div class="description">Добро пожаловать, ${esc(profileName())}. Здесь собраны события и результаты рабочего дня.</div><div class="section-title">Сводка за сегодня</div><div class="cards"><div class="card"><div class="card-icon">🛣️</div><div class="card-label">Пробег сегодня</div><div class="card-value">${todayKm.toLocaleString('ru-RU')} км</div></div><div class="card"><div class="card-icon">✓</div><div class="card-label">Завершено рейсов</div><div class="card-value">${todays.length}</div></div><div class="card"><div class="card-icon">💰</div><div class="card-label">Заработок сегодня</div><div class="card-value">${money(todayNet)}</div></div><div class="card"><div class="card-icon">◷</div><div class="card-label">Активные заказы</div><div class="card-value">${data.orders.length}</div></div></div><div class="section-title">Активный заказ</div><div class="panel">${data.orders.length?orderList():empty('Активных заказов нет. Перейди в диспетчерскую, чтобы создать заказ.') }<button class="secondary full" onclick="showPage('orders')">Открыть диспетчерскую</button></div><div class="section-title">Последние события</div><div class="panel">${data.trips.length?data.trips.slice(-3).reverse().map(t=>`<div class="news-item"><div class="news-icon">✓</div><div class="news-text"><b>${esc(t.from)} → ${esc(t.to)}</b><div class="muted">${Number(t.distance)||0} км · ${money(t.net)}</div><div class="news-time">${esc(t.date)}</div></div></div>`).join(''):empty('Здесь появятся завершённые рейсы и начисления.')}</div>`;
- }else if(page==='trips'){
-  app.innerHTML=`<div class="eyebrow">ЖУРНАЛ ПЕРЕВОЗОК</div><h1>История рейсов</h1><div class="description">Записывай маршруты, пробег и доходы поездок.</div><div class="section-title">Новый завершённый рейс</div><form class="panel" onsubmit="addTrip(event)"><div class="form-grid"><div><label>Откуда</label><input name="from" required placeholder="Берлин"></div><div><label>Куда</label><input name="to" required placeholder="Прага"></div></div><div class="form-grid"><div><label>Дата</label><input name="date" type="date" required></div><div><label>Расстояние, км</label><input name="distance" type="number" min="0" required placeholder="350"></div></div><label>Груз</label><input name="cargo" placeholder="Например, продукты"><div class="form-grid"><div><label>Доход, ₽</label><input name="gross" type="number" min="0" required placeholder="50000"></div><div><label>Комиссия, %</label><input name="fee" type="number" min="0" max="100" value="10" required></div></div><label><input name="credit" type="checkbox" style="width:auto;margin-right:7px">Зачислить чистый доход в банк</label><button class="primary full" type="submit">Сохранить рейс</button></form><div class="section-title">Все рейсы · ${data.trips.length}</div><div class="panel">${tripList()}</div>`;
-  app.querySelector('[name="date"]').value=todayKey();
- }else if(page==='orders'){
-  app.innerHTML=`<div class="eyebrow">ПЛАНИРОВАНИЕ ПЕРЕВОЗОК</div><h1>Диспетчерская</h1><div class="description">Создавай заказы и завершай их после доставки груза.</div><div class="section-title">Новый заказ</div><form class="panel" onsubmit="addOrder(event)"><div class="form-grid"><div><label>Откуда</label><input name="from" required placeholder="Город загрузки"></div><div><label>Куда</label><input name="to" required placeholder="Город доставки"></div></div><label>Дата доставки</label><input name="date" type="date" required><label>Груз</label><input name="cargo" placeholder="Тип груза"><div class="form-grid"><div><label>Расстояние, км</label><input name="distance" type="number" min="0" required></div><div><label>Оплата, ₽</label><input name="pay" type="number" min="0" required></div></div><button class="primary full" type="submit">＋ Создать заказ</button></form><div class="section-title">Запланированные заказы · ${data.orders.length}</div><div class="panel">${orderList()}</div>`;
- }else if(page==='bank'){
-  app.innerHTML=`<div class="eyebrow">ВИРТУАЛЬНЫЕ ФИНАНСЫ</div><h1>Банк</h1><div class="card"><div class="card-label">Текущий баланс</div><div class="card-value">${money(data.balance)}</div><div class="notice">Виртуальные средства VTS, не настоящий банковский счёт.</div></div><div class="section-title">Пополнение баланса</div><form class="panel" onsubmit="deposit(event)"><label>Сумма, ₽</label><input name="amount" type="number" min="1" required placeholder="10000"><label>Описание</label><input name="title" placeholder="Начальный капитал"><button class="primary full" type="submit">Пополнить счёт</button></form><div class="section-title">История операций</div><div class="panel">${bankList()}</div>`;
- }else{
-  const p=data.profile,allTrips=data.trips.length,km=distance(),net=earnings(),gross=data.trips.reduce((s,t)=>s+(Number(t.gross)||Number(t.net)||0),0),avgKm=allTrips?km/allTrips:0,avgNet=allTrips?net/allTrips:0,rate=avgRating(),rated=(p.ratings||[]).length,now=new Date(),monthTrips=data.trips.filter(t=>{const d=new Date((dateKey(t.date)||'2000-01-01')+'T12:00:00');return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()}),todayNet=todayTrips().reduce((s,t)=>s+(Number(t.net)||0),0),todayKm=todayTrips().reduce((s,t)=>s+(Number(t.distance)||0),0),monthNet=monthTrips.reduce((s,t)=>s+(Number(t.net)||0),0),monthKm=monthTrips.reduce((s,t)=>s+(Number(t.distance)||0),0),period=p.chartPeriod||'week',periodLabel=period==='week'?'7 дней':period==='month'?'30 дней':'12 месяцев';
-  app.innerHTML=`<div class="eyebrow">ЛИЧНЫЙ КАБИНЕТ · VTS DRIVER ID</div><div class="profile-hero"><div class="profile-top"><div class="avatar">${esc(profileName().split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0].toUpperCase()).join('')||'V')}</div><div style="min-width:0;flex:1"><div class="profile-name">${esc(profileName())}</div><div class="profile-meta">${esc(p.position||'Водитель')} · ${esc(p.country||'Страна не указана')}</div><div class="rating-pill">★ ${rate?rate.toFixed(1):'—'} <span style="font-weight:500;opacity:.8">/ 5 · ${rated} оценок</span></div></div><button class="edit-icon" onclick="toggleProfileEdit()">✎</button></div><div class="profile-tags"><span class="profile-tag">▣ ${esc(p.company||'Без компании')}</span><span class="profile-tag">◷ Стаж: ${esc(p.experience||'Не указан')}</span><span class="profile-tag">✓ VTS Driver</span></div><div class="profile-meta" style="margin-top:15px">${esc(p.bio||'Твоя виртуальная карьера дальнобойщика — рейсы, достижения и финансовые результаты в одном месте.')}</div></div>
-  <div class="profile-edit" id="profileEdit"><form class="panel" onsubmit="saveProfile(event)"><div class="profile-section-head"><b>Редактирование профиля</b><button class="secondary small-button" type="button" onclick="toggleProfileEdit()">Закрыть</button></div><div class="form-grid"><div><label>Имя</label><input name="firstName" value="${esc(p.firstName||'')}" placeholder="Имя"></div><div><label>Фамилия</label><input name="lastName" value="${esc(p.lastName||'')}" placeholder="Фамилия"></div></div><label>Отображаемое имя</label><input name="name" value="${esc(p.name||'')}" placeholder="Водитель VTS"><label>Транспортная компания</label><input name="company" value="${esc(p.company||'')}"><div class="form-grid"><div><label>Должность</label><input name="position" value="${esc(p.position||'')}"></div><div><label>Водительский стаж</label><input name="experience" value="${esc(p.experience||'')}"></div></div><label>Страна / регион</label><input name="country" value="${esc(p.country||'')}"><label>О себе</label><textarea name="bio" rows="3">${esc(p.bio||'')}</textarea><button class="primary full" type="submit">Сохранить изменения</button></form></div>
-  <div class="section-title">Карьерная статистика</div><div class="profile-stats"><div class="stat-tile"><div class="stat-symbol">📦</div><div class="stat-label">Завершено рейсов</div><div class="stat-number">${allTrips}</div><div class="stat-foot">${monthTrips.length} в этом месяце</div></div><div class="stat-tile"><div class="stat-symbol">🛣️</div><div class="stat-label">Общий пробег</div><div class="stat-number">${km.toLocaleString('ru-RU')} км</div><div class="stat-foot">В среднем ${Math.round(avgKm).toLocaleString('ru-RU')} км / рейс</div></div><div class="stat-tile"><div class="stat-symbol">💰</div><div class="stat-label">Чистый доход</div><div class="stat-number">${money(net)}</div><div class="stat-foot">После комиссии</div></div><div class="stat-tile"><div class="stat-symbol">📈</div><div class="stat-label">Средний доход с рейса</div><div class="stat-number">${money(avgNet)}</div><div class="stat-foot">По завершённым рейсам</div></div><div class="stat-tile"><div class="stat-symbol">🧾</div><div class="stat-label">Доход до комиссии</div><div class="stat-number">${money(gross)}</div><div class="stat-foot">Начисления по рейсам</div></div><div class="stat-tile"><div class="stat-symbol">🎯</div><div class="stat-label">Активные заказы</div><div class="stat-number">${data.orders.length}</div><div class="stat-foot">В диспетчерской</div></div><div class="stat-tile"><div class="stat-symbol">📅</div><div class="stat-label">Доход сегодня</div><div class="stat-number">${money(todayNet)}</div><div class="stat-foot">Пробег: ${todayKm.toLocaleString('ru-RU')} км</div></div><div class="stat-tile"><div class="stat-symbol">🗓️</div><div class="stat-label">Доход за месяц</div><div class="stat-number">${money(monthNet)}</div><div class="stat-foot">Пробег: ${monthKm.toLocaleString('ru-RU')} км</div></div><div class="stat-tile"><div class="stat-symbol">⭐</div><div class="stat-label">Рейтинг водителя</div><div class="stat-number">${rate?rate.toFixed(1)+' / 5':'—'}</div><div class="stat-foot">Оценено рейсов: ${rated}</div></div></div>
-  <div class="section-title">Аналитика карьеры</div><div class="chart-panel"><div class="chart-head"><div><div class="chart-title">Чистый заработок</div><div class="chart-total">${money(periodSum('money',period))}</div><div class="muted">За период: ${periodLabel}</div></div><span style="font-size:24px">💵</span></div><div class="period-switch"><button class="${period==='week'?'active':''}" onclick="setChartPeriod('week')">7 дней</button><button class="${period==='month'?'active':''}" onclick="setChartPeriod('month')">30 дней</button><button class="${period==='year'?'active':''}" onclick="setChartPeriod('year')">12 мес.</button></div>${renderBars('money',period)}<div class="chart-legend"><span class="legend-dot"></span>Чистый доход по рейсам</div></div>
-  <div class="chart-panel"><div class="chart-head"><div><div class="chart-title">Пробег</div><div class="chart-total">${Math.round(periodSum('km',period)).toLocaleString('ru-RU')} км</div><div class="muted">За период: ${periodLabel}</div></div><span style="font-size:24px">🛣️</span></div>${renderBars('km',period)}<div class="chart-legend"><span class="legend-dot"></span>Километры по дате рейса</div></div>
-  <div class="section-title">Достижения</div><div class="panel">${achievements().map(a=>`<div class="achievement"><div class="achievement-icon">${a.icon}</div><div style="min-width:0"><div class="achievement-title">${a.title}</div><div class="achievement-sub">${a.sub}</div></div><div class="achievement-state">${a.done?'✓ Получено':'В процессе'}</div></div>`).join('')}</div><div class="section-title">Последние рейсы</div><div class="panel">${profileRecentTrips()}</div><div class="section-title">Резервная копия</div><div class="panel"><button class="secondary full" onclick="exportData()">Экспортировать данные JSON</button><label>Восстановить из JSON-файла</label><input type="file" accept=".json,application/json" onchange="importData(event)"><div class="notice">Данные сохраняются в браузере этого устройства. Профиль и статистика обновляются из записей VTS.</div></div>`;
- }
+const KEY = "vts_data_v1";
+
+const defaults = {
+  profile: {
+    firstName: "Данил",
+    lastName: "Водитель",
+    nickname: "VTS_Driver",
+    company: "VTS Logistics",
+    city: "Москва",
+    level: 1,
+    rating: 5
+  },
+  trips: [],
+  orders: [
+    {
+      id: 1001,
+      from: "Берлин",
+      to: "Прага",
+      cargo: "Продукты питания",
+      distance: 350,
+      payment: 42000,
+      status: "Доступен"
+    },
+    {
+      id: 1002,
+      from: "Мюнхен",
+      to: "Вена",
+      cargo: "Электроника",
+      distance: 435,
+      payment: 57000,
+      status: "Доступен"
+    }
+  ],
+  transactions: [],
+  ratings: [],
+  settings: {
+    currency: "₽"
+  }
+};
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem(KEY);
+    if (!saved) return structuredClone(defaults);
+    const data = JSON.parse(saved);
+    return {
+      ...structuredClone(defaults),
+      ...data,
+      profile: {...defaults.profile, ...data.profile},
+      settings: {...defaults.settings, ...data.settings},
+      trips: Array.isArray(data.trips) ? data.trips : [],
+      orders: Array.isArray(data.orders) ? data.orders : [],
+      transactions: Array.isArray(data.transactions) ? data.transactions : [],
+      ratings: Array.isArray(data.ratings) ? data.ratings : []
+    };
+  } catch (error) {
+    console.error("Ошибка загрузки VTS:", error);
+    return structuredClone(defaults);
+  }
 }
-function addTrip(e){e.preventDefault();const f=new FormData(e.target),gross=Number(f.get('gross'))||0,fee=Number(f.get('fee'))||0,net=gross-gross*fee/100,t={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),from:f.get('from'),to:f.get('to'),date:f.get('date'),distance:Number(f.get('distance')),cargo:f.get('cargo'),gross,fee,net};data.trips.push(t);if(f.get('credit')){data.balance+=net;data.transactions.push({id:String(Date.now()),title:'Доход за рейс: '+t.from+' — '+t.to,date:t.date,amount:net})}saveData();showPage('trips')}
-function deleteTrip(id){if(!confirm('Удалить этот рейс?'))return;data.trips=data.trips.filter(t=>String(t.id)!==String(id));saveData();render()}
-function addOrder(e){e.preventDefault();const f=new FormData(e.target);data.orders.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),from:f.get('from'),to:f.get('to'),date:f.get('date'),cargo:f.get('cargo'),distance:Number(f.get('distance')),pay:Number(f.get('pay'))});saveData();showPage('orders')}
-function deleteOrder(id){if(!confirm('Отменить этот заказ?'))return;data.orders=data.orders.filter(o=>String(o.id)!==String(id));saveData();render()}
-function completeOrder(id){const o=data.orders.find(x=>String(x.id)===String(id));if(!o)return;if(!confirm('Перенести заказ в историю рейсов? Комиссия составит 10%.'))return;const gross=Number(o.pay)||0,fee=10,net=gross-gross*fee/100;data.trips.push({...o,id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),gross,fee,net});data.orders=data.orders.filter(x=>String(x.id)!==String(id));data.balance+=net;data.transactions.push({id:String(Date.now()),title:'Доход за заказ: '+o.from+' — '+o.to,date:o.date,amount:net});saveData();showPage('trips')}
-function deposit(e){e.preventDefault();const f=new FormData(e.target),amount=Number(f.get('amount'));if(amount<=0)return;data.balance+=amount;data.transactions.push({id:String(Date.now()),title:f.get('title')||'Пополнение виртуального счёта',date:todayKey(),amount});saveData();render()}
-function toggleProfileEdit(){const el=document.getElementById('profileEdit');if(el)el.classList.toggle('open')}
-function saveProfile(e){e.preventDefault();const f=new FormData(e.target);data.profile={...data.profile,firstName:String(f.get('firstName')||'').trim(),lastName:String(f.get('lastName')||'').trim(),name:String(f.get('name')||'').trim(),company:String(f.get('company')||'').trim(),position:String(f.get('position')||'').trim(),experience:String(f.get('experience')||'').trim(),country:String(f.get('country')||'').trim(),bio:String(f.get('bio')||'').trim()};saveData();render()}
-function exportData(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='VTS-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-function importData(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const x=JSON.parse(reader.result);if(!x.profile||!Array.isArray(x.trips)||!Array.isArray(x.orders)||!Array.isArray(x.transactions))throw Error();if(!confirm('Заменить текущие данные резервной копией?'))return;data=x;saveData();showPage('profile');alert('Данные восстановлены.')}catch(err){alert('Не удалось прочитать резервную копию VTS.')}};reader.readAsText(file)}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')toggleMenu(false)});
+
+let db = loadData();
+let currentPage = "home";
+
+function saveData() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(db));
+  } catch (error) {
+    alert("Не удалось сохранить данные. Проверьте свободное место браузера.");
+  }
+}
+
+function money(value) {
+  return new Intl.NumberFormat("ru-RU", {
+    maximumFractionDigits: 0
+  }).format(Number(value) || 0) + " ₽";
+}
+
+function number(value) {
+  return new Intl.NumberFormat("ru-RU", {
+    maximumFractionDigits: 1
+  }).format(Number(value) || 0);
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function totalDistance() {
+  return db.trips.reduce((sum, trip) => sum + Number(trip.distance || 0), 0);
+}
+
+function totalIncome() {
+  return db.trips.reduce((sum, trip) => sum + Number(trip.payment || 0), 0);
+}
+
+function totalExpenses() {
+  return db.transactions
+    .filter(item => item.type === "expense")
+    .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+}
+
+function balance() {
+  const income = db.transactions
+    .filter(item => item.type === "income")
+    .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+
+  return income + totalIncome() - totalExpenses();
+}
+
+function toggleMenu(open) {
+  document.getElementById("drawer").classList.toggle("open", open);
+  document.getElementById("overlay").classList.toggle("open", open);
+}
+
+function showPage(page) {
+  currentPage = page;
+  toggleMenu(false);
+
+  document.querySelectorAll(".drawer-link").forEach(button => {
+    button.classList.toggle("active", button.dataset.page === page);
+  });
+
+  render();
+  window.scrollTo({top: 0, behavior: "smooth"});
+}
+
+function pageHeader(label, title, description) {
+  return `
+    <div class="eyebrow">${escapeHTML(label)}</div>
+    <h1>${escapeHTML(title)}</h1>
+    <div class="description">${escapeHTML(description)}</div>
+  `;
+}
+
+function card(label, value, icon) {
+  return `
+    <div class="card">
+      <div class="card-icon">${icon}</div>
+      <div class="card-label">${escapeHTML(label)}</div>
+      <div class="card-value">${escapeHTML(value)}</div>
+    </div>
+  `;
+}
+
+function renderHome() {
+  const recent = [...db.trips].slice(-3).reverse();
+
+  return `
+    ${pageHeader("VIRTUAL TRUCKING SYSTEM", "Твоя карьера", "Управляй виртуальной карьерой дальнобойщика в ETS2.")}
+
+    <div class="cards">
+      ${card("Всего рейсов", number(db.trips.length), "🚛")}
+      ${card("Общий пробег", number(totalDistance()) + " км", "🛣️")}
+      ${card("Заработано", money(totalIncome()), "💰")}
+      ${card("Баланс", money(balance()), "🏦")}
+    </div>
+
+    <div class="section-title">Быстрые действия</div>
+    <div class="panel">
+      <button class="primary full" onclick="showPage('trips')">＋ Добавить рейс</button>
+      <button class="secondary full" onclick="showPage('orders')">Открыть диспетчерскую</button>
+      <button class="secondary full" onclick="showPage('profile')">Профиль водителя</button>
+    </div>
+
+    <div class="section-title">Последние рейсы</div>
+    <div class="panel">
+      ${recent.length ? recent.map(trip => `
+        <div class="item">
+          <div class="row">
+            <div class="item-title">${escapeHTML(trip.from)} → ${escapeHTML(trip.to)}</div>
+            <strong>${money(trip.payment)}</strong>
+          </div>
+          <div class="item-sub">${number(trip.distance)} км · ${escapeHTML(trip.cargo)} · ${escapeHTML(trip.date)}</div>
+        </div>
+      `).join("") : '<div class="empty">Рейсов пока нет.<br>Добавь первый рейс, чтобы начать статистику.</div>'}
+    </div>
+
+    <div class="section-title">Новости VTS</div>
+    <div class="panel">
+      <div class="news-item">
+        <div class="news-icon">🚛</div>
+        <div class="news-text"><strong>Добро пожаловать в VTS</strong><div class="news-time">Система учёта карьеры</div>Записывай рейсы, следи за финансами и развивай профиль водителя.</div>
+      </div>
+      <div class="news-item">
+        <div class="news-icon">📊</div>
+        <div class="news-text"><strong>Статистика карьеры</strong><div class="news-time">Совет водителю</div>Регулярно добавляй завершённые рейсы, чтобы видеть свой прогресс.</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderTrips() {
+  const trips = [...db.trips].reverse();
+
+  return `
+    ${pageHeader("ЖУРНАЛ ВОДИТЕЛЯ", "История рейсов", "Добавляй завершённые перевозки вручную.")}
+
+    <div class="cards">
+      ${card("Рейсов", number(db.trips.length), "🚚")}
+      ${card("Пробег", number(totalDistance()) + " км", "🛣️")}
+    </div>
+
+    <div class="section-title">Новый рейс</div>
+    <form class="panel" onsubmit="addTrip(event)">
+      <div class="form-grid">
+        <div><label>Откуда<input name="from" required placeholder="Берлин"></label></div>
+        <div><label>Куда<input name="to" required placeholder="Прага"></label></div>
+        <div><label>Груз<input name="cargo" required placeholder="Электроника"></label></div>
+        <div><label>Дата<input name="date" type="date" required></label></div>
+        <div><label>Расстояние, км<input name="distance" type="number" min="1" required></label></div>
+        <div><label>Оплата, ₽<input name="payment" type="number" min="0" required></label></div>
+      </div>
+      <button class="primary full" type="submit">Сохранить рейс</button>
+    </form>
+
+    <div class="section-title">Все рейсы · ${trips.length}</div>
+    <div class="panel">
+      ${trips.length ? trips.map(trip => `
+        <div class="item">
+          <div class="row">
+            <div class="item-title">${escapeHTML(trip.from)} → ${escapeHTML(trip.to)}</div>
+            <strong>${money(trip.payment)}</strong>
+          </div>
+          <div class="item-sub">${escapeHTML(trip.date)} · ${number(trip.distance)} км · ${escapeHTML(trip.cargo)}</div>
+          <button class="danger small-button" style="margin-top:9px" onclick="deleteTrip(${Number(trip.id)})">Удалить</button>
+        </div>
+      `).join("") : '<div class="empty">История пока пуста.</div>'}
+    </div>
+  `;
+}
+
+function addTrip(event) {
+  event.preventDefault();
+  const form = new FormData(event.target);
+
+  const trip = {
+    id: Date.now(),
+    from: form.get("from").trim(),
+    to: form.get("to").trim(),
+    cargo: form.get("cargo").trim(),
+    date: form.get("date"),
+    distance: Number(form.get("distance")),
+    payment: Number(form.get("payment"))
+  };
+
+  if (!trip.from || !trip.to || trip.distance <= 0 || trip.payment < 0) {
+    alert("Проверь введённые данные.");
+    return;
+  }
+
+  db.trips.push(trip);
+  saveData();
+  render();
+  alert("Рейс добавлен в историю!");
+}
+
+function deleteTrip(id) {
+  if (!confirm("Удалить этот рейс?")) return;
+  db.trips = db.trips.filter(trip => Number(trip.id) !== id);
+  saveData();
+  render();
+}
+
+function renderOrders() {
+  return `
+    ${pageHeader("VTS DISPATCH", "Диспетчерская", "Выбирай заказы для своей виртуальной карьеры.")}
+    <div class="cards">
+      ${card("Доступно", number(db.orders.filter(o => o.status === "Доступен").length), "📦")}
+      ${card("Выполнено", number(db.orders.filter(o => o.status === "Выполнен").length), "✓")}
+    </div>
+    <div class="section-title">Доступные заказы</div>
+    <div class="panel">
+      ${db.orders.length ? db.orders.map(o => `
+        <div class="item">
+          <div class="row">
+            <div class="item-title">${escapeHTML(o.from)} → ${escapeHTML(o.to)}</div>
+            <strong>${money(o.payment)}</strong>
+          </div>
+          <div class="item-sub">${escapeHTML(o.cargo)} · ${number(o.distance)} км · ${escapeHTML(o.status)}</div>
+          ${o.status === "Доступен" ? `<button class="primary small-button" style="margin-top:9px" onclick="acceptOrder(${Number(o.id)})">Принять заказ</button>` : ""}
+        </div>
+      `).join("") : '<div class="empty">Заказов пока нет.</div>'}
+    </div>
+    <div class="section-title">Создать заказ</div>
+    <form class="panel" onsubmit="addOrder(event)">
+      <label>Откуда<input name="from" required placeholder="Гамбург"></label>
+      <label>Куда<input name="to" required placeholder="Амстердам"></label>
+      <label>Груз<input name="cargo" required placeholder="Промышленные товары"></label>
+      <div class="form-grid">
+        <div><label>Километры<input name="distance" type="number" min="1" required></label></div>
+        <div><label>Оплата, ₽<input name="payment" type="number" min="0" required></label></div>
+      </div>
+      <button class="primary full" type="submit">Добавить заказ</button>
+    </form>
+  `;
+}
+
+function addOrder(event) {
+  event.preventDefault();
+  const f = new FormData(event.target);
+  db.orders.push({
+    id: Date.now(),
+    from: f.get("from").trim(),
+    to: f.get("to").trim(),
+    cargo: f.get("cargo").trim(),
+    distance: Number(f.get("distance")),
+    payment: Number(f.get("payment")),
+    status: "Доступен"
+  });
+  saveData();
+  render();
+  alert("Заказ добавлен!");
+}
+
+function acceptOrder(id) {
+  const order = db.orders.find(o => Number(o.id) === id);
+  if (!order || order.status !== "Доступен") return;
+  if (!confirm(`Принять заказ ${order.from} → ${order.to}?`)) return;
+  order.status = "Выполнен";
+  db.trips.push({
+    id: Date.now(),
+    from: order.from,
+    to: order.to,
+    cargo: order.cargo,
+    distance: order.distance,
+    payment: order.payment,
+    date: new Date().toISOString().slice(0, 10)
+  });
+  saveData();
+  render();
+  alert("Заказ выполнен и добавлен в историю рейсов.");
+}
+
+function renderBank() {
+  return `
+    ${pageHeader("ФИНАНСЫ", "Банк водителя", "Веди учёт виртуальных доходов и расходов.")}
+    <div class="cards">
+      ${card("Текущий баланс", money(balance()), "🏦")}
+      ${card("Доходы рейсов", money(totalIncome()), "💰")}
+      ${card("Расходы", money(totalExpenses()), "💸")}
+    </div>
+    <div class="section-title">Финансовая операция</div>
+    <form class="panel" onsubmit="addTransaction(event)">
+      <label>Тип операции
+        <select name="type">
+          <option value="income">Дополнительный доход</option>
+          <option value="expense">Расход</option>
+        </select>
+      </label>
+      <label>Описание<input name="description" required placeholder="Заправка, ремонт, премия"></label>
+      <label>Сумма, ₽<input name="amount" type="number" min="1" required></label>
+      <button class="primary full" type="submit">Сохранить операцию</button>
+    </form>
+    <div class="section-title">История операций</div>
+    <div class="panel">
+      ${db.transactions.length ? [...db.transactions].reverse().map(t => `
+        <div class="item row">
+          <div><div class="item-title">${escapeHTML(t.description)}</div><div class="item-sub">${escapeHTML(t.date)} · ${t.type === "expense" ? "Расход" : "Доход"}</div></div>
+          <strong style="color:${t.type === "expense" ? "#ff9eaa" : "#42d6a0"}">${t.type === "expense" ? "−" : "+"}${money(t.amount)}</strong>
+        </div>
+      `).join("") : '<div class="empty">Операций пока нет.</div>'}
+    </div>
+  `;
+}
+
+function addTransaction(event) {
+  event.preventDefault();
+  const f = new FormData(event.target);
+  db.transactions.push({
+    id: Date.now(),
+    type: f.get("type"),
+    description: f.get("description").trim(),
+    amount: Number(f.get("amount")),
+    date: new Date().toISOString().slice(0, 10)
+  });
+  saveData();
+  render();
+  alert("Операция сохранена.");
+}
+
+function renderProfile() {
+  const p = db.profile;
+  const name = [p.firstName, p.lastName].filter(Boolean).join(" ") || "Водитель VTS";
+
+  return `
+    ${pageHeader("ЛИЧНОЕ ДЕЛО", "Профиль водителя", "Твои данные и достижения виртуальной карьеры.")}
+    <div class="profile-hero">
+      <div class="profile-top">
+        <div class="avatar">${escapeHTML((p.firstName || "V").slice(0, 1).toUpperCase())}</div>
+        <div>
+          <div class="profile-name">${escapeHTML(name)}</div>
+          <div class="profile-meta">@${escapeHTML(p.nickname)} · ${escapeHTML(p.company)}</div>
+          <div class="rating-pill">★ ${number(p.rating)} / 5</div>
+        </div>
+        <button class="edit-icon" onclick="toggleProfileEdit()" aria-label="Редактировать профиль">✎</button>
+      </div>
+      <div class="profile-tags">
+        <span class="profile-tag">Уровень ${number(p.level)}</span>
+        <span class="profile-tag">🚛 Водитель ETS2</span>
+        <span class="profile-tag">📍 ${escapeHTML(p.city)}</span>
+      </div>
+    </div>
+    <div class="profile-edit" id="profileEdit">
+      <form class="panel" onsubmit="saveProfile(event)">
+        <div class="form-grid">
+          <div><label>Имя<input name="firstName" value="${escapeHTML(p.firstName)}" required></label></div>
+          <div><label>Фамилия<input name="lastName" value="${escapeHTML(p.lastName)}" required></label></div>
+          <div><label>Никнейм<input name="nickname" value="${escapeHTML(p.nickname)}" required></label></div>
+          <div><label>Компания<input name="company" value="${escapeHTML(p.company)}" required></label></div>
+          <div><label>Город<input name="city" value="${escapeHTML(p.city)}" required></label></div>
+          <div><label>Уровень<input name="level" type="number" min="1" value="${Number(p.level) || 1}"></label></div>
+        </div>
+        <button class="primary full" type="submit">Сохранить профиль</button>
+      </form>
+    </div>
+    <div class="profile-stats">
+      <div class="stat-tile"><div class="stat-symbol">🚚</div><div class="stat-label">Завершено рейсов</div><div class="stat-number">${number(db.trips.length)}</div></div>
+      <div class="stat-tile"><div class="stat-symbol">🛣️</div><div class="stat-label">Общий пробег</div><div class="stat-number">${number(totalDistance())} км</div></div>
+      <div class="stat-tile"><div class="stat-symbol">💰</div><div class="stat-label">Доход с рейсов</div><div class="stat-number">${money(totalIncome())}</div></div>
+    </div>
+    <div class="section-title">Достижения</div>
+    <div class="panel">
+      ${[
+        ["🚛", "Первый рейс", "Заверши первую перевозку.", db.trips.length >= 1],
+        ["🛣️", "Первые 1 000 км", "Накопи 1 000 км пробега.", totalDistance() >= 1000],
+        ["💰", "Первый заработок", "Заработай на перевозках.", totalIncome() > 0],
+        ["🏆", "Десять рейсов", "Заверши десять перевозок.", db.trips.length >= 10]
+      ].map(a => `
+        <div class="achievement">
+          <div class="achievement-icon">${a[0]}</div>
+          <div><div class="achievement-title">${a[1]}</div><div class="achievement-sub">${a[2]}</div></div>
+          <div class="achievement-state">${a[3] ? "Получено ✓" : "Закрыто"}</div>
+        </div>
+      `).join("")}
+    </div>
+    <div class="section-title">Резервная копия</div>
+    <div class="panel">
+      <button class="primary full" onclick="exportData()">Экспортировать данные JSON</button>
+      <label>Импортировать резервную копию<input type="file" accept=".json,application/json" onchange="importData(event)"></label>
+      <button class="danger full" onclick="resetData()">Сбросить все данные</button>
+      <div class="notice">Данные хранятся локально в браузере на этом устройстве. Экспортируй копию, чтобы не потерять историю.</div>
+    </div>
+  `;
+}
+
+function toggleProfileEdit() {
+  document.getElementById("profileEdit")?.classList.toggle("open");
+}
+
+function saveProfile(event) {
+  event.preventDefault();
+  const f = new FormData(event.target);
+  db.profile = {
+    ...db.profile,
+    firstName: f.get("firstName").trim(),
+    lastName: f.get("lastName").trim(),
+    nickname: f.get("nickname").trim(),
+    company: f.get("company").trim(),
+    city: f.get("city").trim(),
+    level: Math.max(1, Number(f.get("level")) || 1)
+  };
+  saveData();
+  render();
+  alert("Профиль обновлён.");
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(db, null, 2)], {type: "application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "VTS_backup.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const imported = JSON.parse(reader.result);
+      if (!imported || !imported.profile || !Array.isArray(imported.trips)) {
+        throw new Error("Неподходящий формат файла");
+      }
+
+      if (!confirm("Заменить текущие данные данными из резервной копии?")) return;
+
+      db = {
+        ...structuredClone(defaults),
+        ...imported,
+        profile: {...defaults.profile, ...imported.profile},
+        settings: {...defaults.settings, ...imported.settings},
+        trips: Array.isArray(imported.trips) ? imported.trips : [],
+        orders: Array.isArray(imported.orders) ? imported.orders : [],
+        transactions: Array.isArray(imported.transactions) ? imported.transactions : [],
+        ratings: Array.isArray(imported.ratings) ? imported.ratings : []
+      };
+
+      saveData();
+      render();
+      alert("Резервная копия восстановлена.");
+    } catch (error) {
+      alert("Не удалось прочитать JSON-файл. Проверь резервную копию.");
+    }
+  };
+  reader.readAsText(file);
+}
+
+function resetData() {
+  if (!confirm("Удалить всю историю рейсов, заказы и операции? Сначала сделай резервную копию.")) return;
+  if (!confirm("Подтверди сброс данных VTS.")) return;
+  db = structuredClone(defaults);
+  saveData();
+  render();
+}
+
+function render() {
+  const app = document.getElementById("app");
+  const pages = {
+    home: renderHome,
+    trips: renderTrips,
+    orders: renderOrders,
+    bank: renderBank,
+    profile: renderProfile
+  };
+  app.innerHTML = (pages[currentPage] || renderHome)();
+}
+
 render();
 </script>
 </body>
