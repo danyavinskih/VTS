@@ -1,78 +1,360 @@
-  <!DOCTYPE html>
 
+<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b1120">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b111a">
 <title>VTS — Virtual Trucking System</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#0b1120;color:#edf4ff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-header{padding:24px 20px 18px;background:#101a2d;border-bottom:1px solid #24334d}
-.brand{font-size:28px;font-weight:900;letter-spacing:3px;color:#70b7ff}
-.subtitle{color:#8fa4c3;font-size:12px;margin-top:5px}
-main{padding:20px;max-width:850px;margin:auto}
-.eyebrow{color:#70b7ff;font-size:12px;text-transform:uppercase;letter-spacing:2px}
-h1{font-size:25px;margin:8px 0}
-.muted{color:#91a3bf;font-size:14px;line-height:1.5}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:22px 0}
-.card{background:#121e32;border:1px solid #253651;border-radius:16px;padding:17px;min-width:0}
-.card-label{color:#91a3bf;font-size:12px}
-.value{font-size:24px;font-weight:750;margin-top:10px}
-.unit{font-size:12px;color:#91a3bf;margin-top:5px}
-.section-title{font-size:17px;font-weight:700;margin:26px 0 12px}
-.menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.menu button{background:#14233b;color:#edf4ff;border:1px solid #2a405f;border-radius:13px;padding:16px 12px;text-align:left;font-size:14px;min-height:76px;cursor:pointer}
-.menu button:active{background:#203c60}
-.menu span{display:block;font-size:21px;margin-bottom:8px}
-.panel{display:none;background:#121e32;border:1px solid #253651;border-radius:16px;padding:18px;margin-top:18px}
-.panel.active{display:block}
-footer{text-align:center;color:#647894;font-size:12px;padding:28px 16px}
-@media(min-width:650px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.menu{grid-template-columns:repeat(3,minmax(0,1fr))}main{padding:30px}}
+:root {
+  --bg:#0b111a; --panel:#131d2a; --panel2:#192638;
+  --blue:#438cff; --text:#f0f5ff; --muted:#91a2ba;
+  --border:#26364a; --green:#42d6a0;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  padding-bottom:100px;
+}
+button,input,select,textarea {font:inherit}
+button {cursor:pointer}
+header {
+  padding:22px 18px 16px;display:flex;align-items:center;
+  justify-content:space-between;border-bottom:1px solid var(--border);
+}
+.logo {font-size:25px;font-weight:850;letter-spacing:2px}
+.logo span {color:var(--blue)}
+.subtitle {font-size:10px;color:var(--muted);letter-spacing:1.2px;margin-top:4px}
+.status {font-size:11px;color:var(--green);background:#12332d;padding:7px 10px;border-radius:20px}
+main {max-width:850px;margin:auto;padding:22px 16px}
+.eyebrow {color:var(--blue);font-size:11px;font-weight:700;letter-spacing:1.5px}
+h1 {font-size:27px;margin:8px 0}
+.description {color:var(--muted);font-size:14px;line-height:1.5}
+.cards {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:22px 0}
+.card {background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px;min-width:0}
+.card-label {font-size:12px;color:var(--muted)}
+.card-value {font-size:23px;font-weight:750;margin-top:12px;overflow-wrap:anywhere}
+.card-icon {font-size:20px;margin-bottom:12px}
+.section-title {font-size:17px;font-weight:750;margin:25px 0 12px}
+.panel {background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px}
+.row {display:flex;justify-content:space-between;align-items:center;gap:12px}
+.muted {color:var(--muted);font-size:13px}
+.primary,.secondary,.danger {
+  border:0;border-radius:11px;padding:12px 15px;font-weight:650;
+}
+.primary {background:var(--blue);color:white}
+.secondary {background:var(--panel2);color:var(--text);border:1px solid var(--border)}
+.danger {background:#48212a;color:#ffb5c0}
+.full {width:100%;margin-top:12px}
+input,select,textarea {
+  width:100%;background:#0d1622;border:1px solid var(--border);
+  border-radius:10px;color:var(--text);padding:12px;margin-top:6px;
+}
+label {display:block;font-size:13px;color:var(--muted);margin-top:14px}
+.form-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.item {padding:13px 0;border-bottom:1px solid var(--border)}
+.item:last-child {border-bottom:0}
+.item-title {font-weight:650}
+.item-sub {color:var(--muted);font-size:12px;margin-top:5px;line-height:1.5}
+.empty {text-align:center;color:var(--muted);padding:25px 8px;font-size:13px;line-height:1.6}
+nav {
+  position:fixed;z-index:10;bottom:0;left:0;right:0;
+  background:rgba(13,20,31,.97);backdrop-filter:blur(18px);
+  border-top:1px solid var(--border);
+  padding:8px 5px calc(8px + env(safe-area-inset-bottom));
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+}
+nav button {
+  border:0;background:transparent;color:var(--muted);
+  border-radius:12px;padding:8px 1px 5px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  font-size:10px;min-width:0;
+}
+nav button .ico {font-size:21px;line-height:1.1}
+nav button.active {color:#72aaff;background:#172b45}
+nav button span:last-child {white-space:nowrap}
+.small-button {font-size:11px;padding:7px 9px}
+.notice {color:var(--muted);font-size:12px;line-height:1.5;margin-top:12px}
+@media(min-width:600px) {
+  .cards {grid-template-columns:repeat(4,minmax(0,1fr))}
+  main {padding-top:32px}
+}
 </style>
 </head>
 <body>
 <header>
-  <div class="brand">VTS</div>
-  <div class="subtitle">VIRTUAL TRUCKING SYSTEM · ETS2</div>
+  <div>
+    <div class="logo">V<span>T</span>S</div>
+    <div class="subtitle">VIRTUAL TRUCKING SYSTEM · ETS2</div>
+  </div>
+  <div class="status">● Система готова</div>
 </header>
-<main>
-  <div class="eyebrow">Личный кабинет</div>
-  <h1>Добро пожаловать в VTS</h1>
-  <p class="muted">Твоя виртуальная карьера водителя. Управляй рейсами, планируй заказы и следи за результатами.</p>
 
-  <div class="grid">
-    <div class="card"><div class="card-label">Выполнено рейсов</div><div class="value" id="trips">0</div><div class="unit">рейсов</div></div>
-    <div class="card"><div class="card-label">Общий пробег</div><div class="value" id="distance">0</div><div class="unit">километров</div></div>
-    <div class="card"><div class="card-label">Доход</div><div class="value" id="income">0 ₽</div><div class="unit">за все рейсы</div></div>
-    <div class="card"><div class="card-label">Баланс VTS</div><div class="value" id="balance">0 ₽</div><div class="unit">виртуальный банк</div></div>
-  </div>
+<main id="app"></main>
 
-  <div class="section-title">Разделы системы</div>
-  <div class="menu">
-    <button onclick="openPanel('profile')"><span>👤</span>Профиль водителя</button>
-    <button onclick="openPanel('tripsPage')"><span>🚛</span>История рейсов</button>
-    <button onclick="openPanel('dispatch')"><span>📋</span>Диспетчерская</button>
-    <button onclick="openPanel('bank')"><span>💳</span>Виртуальный банк</button>
-    <button onclick="openPanel('stats')"><span>📊</span>Статистика</button>
-    <button onclick="openPanel('settings')"><span>⚙️</span>Настройки</button>
-  </div>
+<nav aria-label="Основная навигация">
+  <button class="active" data-page="home" onclick="showPage('home')">
+    <span class="ico">⌂</span><span>Главная</span>
+  </button>
+  <button data-page="trips" onclick="showPage('trips')">
+    <span class="ico">▤</span><span>Рейсы</span>
+  </button>
+  <button data-page="orders" onclick="showPage('orders')">
+    <span class="ico">▣</span><span>Заказы</span>
+  </button>
+  <button data-page="bank" onclick="showPage('bank')">
+    <span class="ico">₽</span><span>Банк</span>
+  </button>
+  <button data-page="profile" onclick="showPage('profile')">
+    <span class="ico">◉</span><span>Профиль</span>
+  </button>
+</nav>
 
-  <div class="panel" id="profile"><h2>Профиль водителя</h2><p class="muted">Здесь мы добавим имя, никнейм, компанию и личную статистику.</p></div>
-  <div class="panel" id="tripsPage"><h2>История рейсов</h2><p class="muted">Здесь будет журнал твоих поездок в ETS2.</p></div>
-  <div class="panel" id="dispatch"><h2>Диспетчерская</h2><p class="muted">Здесь мы создадим и запланируем заказы.</p></div>
-  <div class="panel" id="bank"><h2>Виртуальный банк</h2><p class="muted">Здесь будет личный виртуальный баланс VTS. Настоящие деньги не используются.</p></div>
-  <div class="panel" id="stats"><h2>Статистика</h2><p class="muted">Здесь появятся графики пробега, доходов и выполненных заказов.</p></div>
-  <div class="panel" id="settings"><h2>Настройки</h2><p class="muted">Здесь появятся настройки профиля и системы.</p></div>
-</main>
-<footer>VTS · Личная система виртуальной карьеры · Версия 0.1</footer>
 <script>
-function openPanel(id){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  const panel=document.getElementById(id);
-  if(panel){panel.classList.add('active');panel.scrollIntoView({behavior:'smooth',block:'nearest'});}
+const KEY = 'vts_data_v1';
+
+function freshData() {
+  return {
+    profile: {name:'Водитель VTS', company:'Моя транспортная компания', position:'Водитель'},
+    trips:[], orders:[], transactions:[], balance:0
+  };
 }
+function loadData() {
+  try {
+    const saved = localStorage.getItem(KEY);
+    return saved ? {...freshData(), ...JSON.parse(saved)} : freshData();
+  } catch(e) { return freshData(); }
+}
+let data = loadData();
+let page = 'home';
+
+function saveData() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(data));
+  } catch(e) {
+    alert('Не удалось сохранить данные на этом устройстве.');
+  }
+}
+function esc(value) {
+  return String(value ?? '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+function money(n) {
+  return new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:0}).format(Number(n)||0);
+}
+function distance() {
+  return data.trips.reduce((s,t)=>s+(Number(t.distance)||0),0);
+}
+function earnings() {
+  return data.trips.reduce((s,t)=>s+(Number(t.net)||0),0);
+}
+function showPage(next) {
+  page = next;
+  document.querySelectorAll('nav button').forEach(b =>
+    b.classList.toggle('active',b.dataset.page===page));
+  render();
+  window.scrollTo(0,0);
+}
+function empty(message) {
+  return `<div class="empty">${message}</div>`;
+}
+function tripList() {
+  if (!data.trips.length) return empty('Завершённых рейсов пока нет.<br>Добавь первый рейс, чтобы начать историю.');
+  return data.trips.slice().reverse().map(t=>`
+    <div class="item">
+      <div class="row"><div class="item-title">${esc(t.from)} → ${esc(t.to)}</div>
+      <button class="danger small-button" onclick="deleteTrip('${t.id}')">Удалить</button></div>
+      <div class="item-sub">${esc(t.date)} · ${Number(t.distance)||0} км · ${esc(t.cargo||'Груз не указан')}</div>
+      <div class="row" style="margin-top:9px"><span class="muted">Чистый доход</span><b>${money(t.net)}</b></div>
+    </div>`).join('');
+}
+function orderList() {
+  if (!data.orders.length) return empty('Запланированных заказов пока нет.<br>Создай заказ в диспетчерской.');
+  return data.orders.slice().reverse().map(o=>`
+    <div class="item">
+      <div class="row"><div class="item-title">${esc(o.from)} → ${esc(o.to)}</div>
+      <button class="secondary small-button" onclick="completeOrder('${o.id}')">Завершить</button></div>
+      <div class="item-sub">${esc(o.date)} · ${esc(o.cargo||'Груз не указан')} · ${Number(o.distance)||0} км</div>
+      <div class="row" style="margin-top:8px"><b>${money(o.pay)}</b>
+      <button class="danger small-button" onclick="deleteOrder('${o.id}')">Отменить</button></div>
+    </div>`).join('');
+}
+function bankList() {
+  if (!data.transactions.length) return empty('Операций пока нет.<br>Пополнение виртуального баланса доступно ниже.');
+  return data.transactions.slice().reverse().map(t=>`
+    <div class="item">
+      <div class="row"><div><div class="item-title">${esc(t.title)}</div>
+      <div class="item-sub">${esc(t.date)}</div></div>
+      <b style="color:${t.amount>=0?'var(--green)':'#ff8796'}">${t.amount>=0?'+':''}${money(t.amount)}</b></div>
+    </div>`).join('');
+}
+function render() {
+  const app = document.getElementById('app');
+  if(page==='home') {
+    app.innerHTML = `
+      <div class="eyebrow">ЛИЧНЫЙ КАБИНЕТ · ETS2</div>
+      <h1>Привет, ${esc(data.profile.name)}!</h1>
+      <div class="description">Твоя виртуальная карьера дальнобойщика начинается здесь.</div>
+      <div class="cards">
+        <div class="card"><div class="card-icon">⌁</div><div class="card-label">Общий пробег</div><div class="card-value">${distance().toLocaleString('ru-RU')} км</div></div>
+        <div class="card"><div class="card-icon">₽</div><div class="card-label">Баланс банка</div><div class="card-value">${money(data.balance)}</div></div>
+        <div class="card"><div class="card-icon">▤</div><div class="card-label">Завершено рейсов</div><div class="card-value">${data.trips.length}</div></div>
+        <div class="card"><div class="card-icon">↗</div><div class="card-label">Чистый заработок</div><div class="card-value">${money(earnings())}</div></div>
+      </div>
+      <div class="section-title">Последние рейсы</div>
+      <div class="panel">${tripList()}</div>
+      <button class="primary full" onclick="showPage('trips')">＋ Добавить рейс</button>
+      <div class="section-title">Диспетчерская</div>
+      <div class="panel">${data.orders.length?`<div class="row"><span>Активных заказов</span><b>${data.orders.length}</b></div>`:'<div class="muted">Пока нет запланированных заказов.</div>'}
+      <button class="secondary full" onclick="showPage('orders')">Открыть заказы</button></div>`;
+  } else if(page==='trips') {
+    app.innerHTML = `
+      <div class="eyebrow">ЖУРНАЛ ПЕРЕВОЗОК</div><h1>История рейсов</h1>
+      <div class="description">Записывай маршруты, пробег и доходы своих поездок.</div>
+      <div class="section-title">Новый завершённый рейс</div>
+      <form class="panel" onsubmit="addTrip(event)">
+        <div class="form-grid">
+          <div><label>Откуда</label><input name="from" required placeholder="Берлин"></div>
+          <div><label>Куда</label><input name="to" required placeholder="Прага"></div>
+        </div>
+        <div class="form-grid">
+          <div><label>Дата</label><input name="date" type="date" required></div>
+          <div><label>Расстояние, км</label><input name="distance" type="number" min="0" required placeholder="350"></div>
+        </div>
+        <label>Груз</label><input name="cargo" placeholder="Например, продукты">
+        <div class="form-grid">
+          <div><label>Доход, ₽</label><input name="gross" type="number" min="0" required placeholder="50000"></div>
+          <div><label>Комиссия, %</label><input name="fee" type="number" min="0" max="100" value="10" required></div>
+        </div>
+        <label><input name="credit" type="checkbox" style="width:auto;margin-right:7px">Зачислить чистый доход в банк</label>
+        <button class="primary full" type="submit">Сохранить рейс</button>
+      </form>
+      <div class="section-title">Все рейсы · ${data.trips.length}</div><div class="panel">${tripList()}</div>`;
+    const date = app.querySelector('[name="date"]');
+    if(date) date.value = new Date().toLocaleDateString('en-CA');
+  } else if(page==='orders') {
+    app.innerHTML = `
+      <div class="eyebrow">ПЛАНИРОВАНИЕ ПЕРЕВОЗОК</div><h1>Диспетчерская</h1>
+      <div class="description">Создавай заказы и завершай их после доставки груза.</div>
+      <div class="section-title">Новый заказ</div>
+      <form class="panel" onsubmit="addOrder(event)">
+        <div class="form-grid"><div><label>Откуда</label><input name="from" required placeholder="Город загрузки"></div>
+        <div><label>Куда</label><input name="to" required placeholder="Город доставки"></div></div>
+        <label>Дата доставки</label><input name="date" type="date" required>
+        <label>Груз</label><input name="cargo" placeholder="Тип груза">
+        <div class="form-grid"><div><label>Расстояние, км</label><input name="distance" type="number" min="0" required></div>
+        <div><label>Оплата, ₽</label><input name="pay" type="number" min="0" required></div></div>
+        <button class="primary full" type="submit">＋ Создать заказ</button>
+      </form>
+      <div class="section-title">Запланированные заказы · ${data.orders.length}</div>
+      <div class="panel">${orderList()}</div>`;
+  } else if(page==='bank') {
+    app.innerHTML = `
+      <div class="eyebrow">ФИНАНСЫ ВИРТУАЛЬНОГО ПРОЕКТА</div><h1>Виртуальный банк</h1>
+      <div class="card"><div class="card-label">Текущий баланс</div><div class="card-value">${money(data.balance)}</div><div class="notice">Виртуальные средства VTS. Это не настоящий банковский счёт.</div></div>
+      <div class="section-title">Пополнение баланса</div>
+      <form class="panel" onsubmit="deposit(event)">
+        <label>Сумма, ₽</label><input name="amount" type="number" min="1" required placeholder="10000">
+        <label>Описание</label><input name="title" placeholder="Начальный капитал">
+        <button class="primary full" type="submit">Пополнить виртуальный счёт</button>
+      </form>
+      <div class="section-title">История операций</div><div class="panel">${bankList()}</div>`;
+  } else {
+    app.innerHTML = `
+      <div class="eyebrow">ЛИЧНЫЕ ДАННЫЕ</div><h1>Профиль водителя</h1>
+      <div class="card" style="text-align:center;padding:25px">
+        <div style="font-size:42px">👤</div><div class="card-value">${esc(data.profile.name)}</div>
+        <div class="muted" style="margin-top:8px">${esc(data.profile.position)}</div>
+        <div class="muted" style="margin-top:5px">${esc(data.profile.company)}</div>
+      </div>
+      <div class="section-title">Редактировать профиль</div>
+      <form class="panel" onsubmit="saveProfile(event)">
+        <label>Имя или никнейм</label><input name="name" required value="${esc(data.profile.name)}">
+        <label>Транспортная компания</label><input name="company" value="${esc(data.profile.company)}">
+        <label>Должность</label><input name="position" value="${esc(data.profile.position)}">
+        <button class="primary full" type="submit">Сохранить профиль</button>
+      </form>
+      <div class="section-title">Статистика водителя</div>
+      <div class="cards">
+        <div class="card"><div class="card-label">Рейсы</div><div class="card-value">${data.trips.length}</div></div>
+        <div class="card"><div class="card-label">Пробег</div><div class="card-value">${distance()} км</div></div>
+      </div>
+      <div class="section-title">Резервная копия</div>
+      <div class="panel"><button class="secondary full" onclick="exportData()">Экспортировать данные JSON</button>
+      <label>Восстановить из JSON-файла</label><input type="file" accept=".json,application/json" onchange="importData(event)">
+      <div class="notice">Данные сохраняются в браузере этого устройства. Экспортируй резервную копию, чтобы не потерять записи.</div></div>`;
+  }
+}
+function addTrip(e) {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const gross = Number(f.get('gross'))||0, fee = Number(f.get('fee'))||0;
+  const net = gross - gross*fee/100;
+  const t = {id:crypto.randomUUID(),from:f.get('from'),to:f.get('to'),date:f.get('date'),distance:Number(f.get('distance')),cargo:f.get('cargo'),gross,fee,net};
+  data.trips.push(t);
+  if(f.get('credit')) {
+    data.balance += net;
+    data.transactions.push({id:crypto.randomUUID(),title:'Доход за рейс: '+t.from+' — '+t.to,date:t.date,amount:net});
+  }
+  saveData();showPage('trips');
+}
+function deleteTrip(id) {
+  if(!confirm('Удалить этот рейс?')) return;
+  data.trips=data.trips.filter(t=>t.id!==id);saveData();render();
+}
+function addOrder(e) {
+  e.preventDefault();const f=new FormData(e.target);
+  data.orders.push({id:crypto.randomUUID(),from:f.get('from'),to:f.get('to'),date:f.get('date'),cargo:f.get('cargo'),distance:Number(f.get('distance')),pay:Number(f.get('pay'))});
+  saveData();showPage('orders');
+}
+function deleteOrder(id) {
+  if(!confirm('Отменить этот заказ?')) return;
+  data.orders=data.orders.filter(o=>o.id!==id);saveData();render();
+}
+function completeOrder(id) {
+  const o=data.orders.find(o=>o.id===id);if(!o)return;
+  if(!confirm('Перенести заказ в историю завершённых рейсов? Доход будет равен оплате минус комиссия 10%.'))return;
+  const gross=Number(o.pay)||0,fee=10,net=gross-gross*fee/100;
+  data.trips.push({...o,id:crypto.randomUUID(),gross,fee,net});
+  data.orders=data.orders.filter(x=>x.id!==id);
+  data.balance+=net;
+  data.transactions.push({id:crypto.randomUUID(),title:'Доход за заказ: '+o.from+' — '+o.to,date:o.date,amount:net});
+  saveData();showPage('trips');
+}
+function deposit(e) {
+  e.preventDefault();const f=new FormData(e.target),amount=Number(f.get('amount'));
+  if(amount<=0)return;
+  data.balance+=amount;
+  data.transactions.push({id:crypto.randomUUID(),title:f.get('title')||'Пополнение виртуального счёта',date:new Date().toLocaleDateString('en-CA'),amount});
+  saveData();render();
+}
+function saveProfile(e) {
+  e.preventDefault();const f=new FormData(e.target);
+  data.profile={name:f.get('name'),company:f.get('company'),position:f.get('position')};
+  saveData();render();
+}
+function exportData() {
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='VTS-backup.json';a.click();URL.revokeObjectURL(url);
+}
+function importData(e) {
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try {
+      const imported=JSON.parse(reader.result);
+      if(!imported.profile||!Array.isArray(imported.trips)||!Array.isArray(imported.orders)||!Array.isArray(imported.transactions)||!Number.isFinite(Number(imported.balance)))throw Error();
+      if(!confirm('Заменить текущие данные содержимым резервной копии?'))return;
+      data=imported;saveData();showPage('profile');alert('Данные восстановлены.');
+    } catch(err) {alert('Не удалось прочитать резервную копию VTS.');}
+  };
+  reader.readAsText(file);
+}
+render();
 </script>
 </body>
 </html>
