@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -478,7 +477,16 @@ h3 { font-size:14px;margin:0; }
   $("drawerBackdrop").addEventListener("click", closeDrawer);
   $("navigation").addEventListener("click", event => {
     const button = event.target.closest("[data-page]");
-    if (button) go(button.dataset.page);
+    if (!button) return;
+
+    // Отдельная страница профиля находится в pages/profile.html.
+    // Остальные разделы продолжают работать внутри index.html.
+    if (button.dataset.page === "profile") {
+      window.location.href = "pages/profile.html";
+      return;
+    }
+
+    go(button.dataset.page);
   });
   document.addEventListener("click", event => {
     const button = event.target.closest("[data-go]");
