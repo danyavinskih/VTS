@@ -6,7 +6,8 @@
 <title>VTS — Профиль водителя</title>
 <style>
 :root{--bg:#0b1120;--panel:#131d30;--panel2:#19263b;--border:#263750;--blue:#3987ff;--text:#f1f5fb;--muted:#93a4bd;--green:#35d39a;--yellow:#ffd166;--red:#ff7070}
-*{box-sizing:border-box}body{margin:0;padding:18px;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.container{max-width:850px;margin:auto}.header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}.logo{font-weight:900;font-size:25px;letter-spacing:2px}.logo span{color:var(--blue)}.badge{padding:7px 10px;border:1px solid var(--border);border-radius:20px;color:var(--muted);font-size:11px}h1{font-size:27px;margin:0 0 7px}.subtitle{color:var(--muted);margin-bottom:22px;font-size:14px}.card{background:var(--panel);border:1px solid var(--border);border-radius:17px;padding:18px;margin-bottom:16px}.hero{display:flex;align-items:center;gap:15px}.avatar{width:66px;height:66px;flex-shrink:0;display:grid;place-items:center;background:linear-gradient(135deg,#3987ff,#1748a1);border-radius:18px;font-size:24px;font-weight:800}.name{font-size:22px;font-weight:800;overflow-wrap:anywhere}.meta{color:var(--muted);font-size:13px;margin-top:6px}.rating{color:var(--yellow);margin-top:8px;font-size:13px}.section-title{font-size:16px;font-weight:750;margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.stat{background:var(--panel2);border:1px solid var(--border);padding:14px;border-radius:13px;min-width:0}.stat-label{color:var(--muted);font-size:12px}.stat-value{font-size:21px;font-weight:800;margin-top:8px;overflow-wrap:anywhere}.stat-note{color:var(--green);font-size:11px;margin-top:6px}label{display:block;color:var(--muted);font-size:12px;margin:13px 0 6px}input,textarea,select{width:100%;padding:12px;color:var(--text);background:#0b1424;border:1px solid var(--border);border-radius:10px;font:inherit;outline:none}input:focus,textarea:focus,select:focus{border-color:var(--blue)}textarea{resize:vertical;min-height:80px}button{padding:11px 14px;border:0;border-radius:10px;background:var(--blue);color:white;font-weight:700;cursor:pointer;margin-top:12px}.secondary{background:var(--panel2);border:1px solid var(--border)}.actions{display:flex;flex-wrap:wrap;gap:8px}.actions button{flex:1}.achievement{display:flex;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid var(--border)}.achievement:last-child{border-bottom:0;padding-bottom:0}.medal{width:42px;height:42px;flex-shrink:0;display:grid;place-items:center;border-radius:12px;background:#243753;font-size:20px}.achievement-title{font-weight:700;font-size:14px}.achievement-desc{color:var(--muted);font-size:12px;margin-top:4px}.notice{color:var(--muted);font-size:12px;line-height:1.6}#message{color:var(--green);font-size:13px;margin-top:10px;min-height:18px}.back{display:inline-block;color:#a9caff;text-decoration:none;font-size:13px;margin:0 0 18px}.back:hover{text-decoration:underline}.empty{color:var(--muted);font-size:13px;padding:8px 0}@media(max-width:480px){body{padding:13px}.header{align-items:flex-start}.logo{font-size:22px}h1{font-size:24px}.card{padding:15px}.stat-value{font-size:19px}.badge{font-size:10px}}
+*{box-sizing:border-box}body{margin:0;padding:18px;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.container{max-width:850px;margin:auto}.header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}.logo{font-weight:900;font-size:25px;letter-spacing:2px}.logo span{color:var(--blue)}.badge{padding:7px 10px;border:1px solid var(--border);border-radius:20px;color:var(--muted);font-size:11px}h1{font-size:27px;margin:0 0 7px}.subtitle{color:var(--muted);margin-bottom:22px;font-size:14px}.card{background:var(--panel);border:1px solid var(--border);border-radius:17px;padding:18px;margin-bottom:16px}.hero{display:flex;align-items:center;gap:15px}.avatar{width:66px;height:66px;flex-shrink:0;display:grid;place-items:center;background:linear-gradient(135deg,#3987ff,#1748a1);border-radius:18px;font-size:24px;font-weight:800}.name{font-size:22px;font-weight:800;overflow-wrap:anywhere}.meta{color:var(--muted);font-size:13px;margin-top:6px}.rating{color:var(--yellow);margin-top:8px;font-size:13px}.section-title{font-size:16px;font-weight:750;margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.stat{background:var(--panel2);border:1px solid var(--border);padding:14px;border-radius:13px;min-width:0}.stat-label{color:var(--muted);font-size:12px}.stat-value{font-size:21px;font-weight:800;margin-top:8px;overflow-wrap:anywhere}.stat-note{color:var(--green);font-size:11px;margin-top:6px}label{display:block;color:var(--muted);font-size:12px;margin:13px 0 6px}input,textarea,select{width:100%;padding:12px;color:var(--text);background:#0b1424;border:1px solid var(--border);border-radius:10px;font:inherit;outline:none}input:focus,textarea:focus,select:focus{border-color:var(--blue)}textarea{resize:vertical;min-height:80px}button{padding:11px 14px;border:0;border-radius:10px;background:var(--blue);color:white;font-weight:700;cursor:pointer;margin-top:12px}.secondary{background:var(--panel2);border:1px solid var(--border)}.actions{display:flex;flex-wrap:wrap;gap:8px}.actions button{flex:1}.achievement{display:flex;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid var(--border)}.achievement:last-child{border-bottom:0;padding-bottom:0}.medal{width:42px;height:42px;flex-shrink:0;display:grid;place-items:center;border-radius:12px;background:#243753;font-size:20px}.achievement-title{font-weight:700;font-size:14px}.achievement-desc{color:var(--muted);font-size:12px;margin-top:4px}.notice{color:var(--muted);font-size:12px;line-height:1.6}#message{color:var(--green);font-size:13px;margin-top:10px;min-height:18px}.back{display:inline-block;color:#a9caff;text-decoration:none;font-size:13px;margin:0 0 18px}.back:hover{text-decoration:underline}.empty{color:var(--muted);font-size:13px;padding:8px 0}
+.hero-main{min-width:0;flex:1}.hero-topline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.rating-pill{display:inline-flex;align-items:center;gap:5px;background:#332d20;border:1px solid #63512b;color:var(--yellow);padding:6px 9px;border-radius:999px;font-size:12px;font-weight:800;margin-top:8px}.quick-facts{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.quick-fact{background:#0d1728;border:1px solid var(--border);border-radius:9px;padding:6px 9px;color:var(--muted);font-size:12px}.quick-fact strong{color:var(--text);font-weight:750}.edit-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;margin:0;text-align:left;background:transparent;border:0;padding:0;color:var(--text);font-size:16px}.edit-toggle .toggle-icon{color:var(--blue);font-size:20px;transition:transform .2s}.edit-toggle[aria-expanded="true"] .toggle-icon{transform:rotate(180deg)}.edit-body{padding-top:10px}.edit-body[hidden]{display:none}.chart-card{background:var(--panel2);border:1px solid var(--border);border-radius:13px;padding:14px;margin-top:12px}.chart-heading{display:flex;justify-content:space-between;gap:8px;align-items:center;font-weight:750;font-size:14px}.chart-heading .chart-icon{font-size:19px;margin-right:6px}.chart-subtitle{color:var(--muted);font-size:11px;margin-top:5px}.compare-bars{display:grid;gap:13px;margin-top:17px}.compare-row{display:grid;grid-template-columns:76px minmax(0,1fr) 70px;align-items:center;gap:9px;font-size:12px}.compare-label{color:var(--muted)}.bar-track{height:13px;background:#0b1424;border-radius:99px;overflow:hidden;border:1px solid #263750}.bar-fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#286ce0,#53a2ff);transition:width .35s}.bar-fill.yesterday{background:linear-gradient(90deg,#4c607a,#8498b4)}.bar-value{text-align:right;font-weight:750;white-space:nowrap}.compare-summary{display:flex;align-items:center;gap:7px;font-size:12px;margin-top:14px;padding-top:11px;border-top:1px solid var(--border)}.compare-summary.up{color:var(--green)}.compare-summary.down{color:#ff9b9b}.compare-summary.same{color:var(--muted)}.section-icon{display:inline-grid;place-items:center;width:29px;height:29px;background:#203653;border-radius:9px;margin-right:8px;font-size:15px;vertical-align:middle}.stats-grid .stat-label{display:flex;align-items:center;gap:6px}.stats-grid .stat-icon{font-size:16px}.section-title{display:flex;align-items:center}.section-title .section-icon{flex-shrink:0}@media(max-width:480px){.compare-row{grid-template-columns:64px minmax(0,1fr) 62px;gap:7px}.quick-fact{font-size:11px}.hero{align-items:flex-start}.avatar{width:56px;height:56px;border-radius:15px}}@media(max-width:480px){body{padding:13px}.header{align-items:flex-start}.logo{font-size:22px}h1{font-size:24px}.card{padding:15px}.stat-value{font-size:19px}.badge{font-size:10px}}
 </style>
 </head>
 <body>
@@ -17,17 +18,20 @@
   <div class="subtitle">Личные данные, карьерная статистика и достижения</div>
 
   <section class="card">
-    <div class="hero"><div class="avatar" id="avatar">V</div><div><div class="name" id="heroName">Новый водитель</div><div class="meta" id="heroMeta">Компания не указана · Водитель</div><div class="rating" id="rating">★ Рейтинг: 0.0</div></div></div>
+    <div class="hero"><div class="avatar" id="avatar">V</div><div class="hero-main"><div class="hero-topline"><div class="name" id="heroName">Новый водитель</div></div><div class="meta" id="heroMeta">Компания не указана · Водитель</div><div class="quick-facts"><div class="quick-fact">🧭 Стаж: <strong id="heroExperience">Не указан</strong></div><div class="quick-fact">⭐ Рейтинг: <strong id="heroRating">0.0 / 5</strong></div></div></div></div>
   </section>
 
-  <section class="card"><div class="section-title">Карьерная статистика</div><div class="grid">
-    <div class="stat"><div class="stat-label">Завершено рейсов</div><div class="stat-value" id="tripsCount">0</div><div class="stat-note">Всего в карьере</div></div>
-    <div class="stat"><div class="stat-label">Общее расстояние</div><div class="stat-value" id="distance">0 км</div><div class="stat-note">По завершённым рейсам</div></div>
-    <div class="stat"><div class="stat-label">Заработано</div><div class="stat-value" id="earnings">€0</div><div class="stat-note">Доход от рейсов</div></div>
-    <div class="stat"><div class="stat-label">Стаж в VTS</div><div class="stat-value" id="experienceView">Не указан</div><div class="stat-note">Профиль водителя</div></div>
-  </div></section>
+  <section class="card"><div class="section-title"><span class="section-icon">📊</span>Карьерная статистика</div><div class="grid stats-grid">
+    <div class="stat"><div class="stat-label"><span class="stat-icon">🚚</span> Рейсы</div><div class="stat-value" id="tripsCount">0</div><div class="stat-note">Завершено за карьеру</div></div>
+    <div class="stat"><div class="stat-label"><span class="stat-icon">🛣️</span> Расстояние</div><div class="stat-value" id="distance">0 км</div><div class="stat-note">Суммарный пробег</div></div>
+    <div class="stat"><div class="stat-label"><span class="stat-icon">💶</span> Доход</div><div class="stat-value" id="earnings">€0</div><div class="stat-note">Заработано за рейсы</div></div>
+    <div class="stat"><div class="stat-label"><span class="stat-icon">🏅</span> Стаж в VTS</div><div class="stat-value" id="experienceView">Не указан</div><div class="stat-note">Опыт водителя</div></div>
+  </div>
+  <div class="chart-card"><div class="chart-heading"><div><span class="chart-icon">🛣️</span>Пробег: сегодня и вчера</div></div><div class="chart-subtitle">Сравнение километров по датам завершения рейсов</div><div class="compare-bars"><div class="compare-row"><div class="compare-label">Сегодня</div><div class="bar-track"><div class="bar-fill" id="kmTodayBar"></div></div><div class="bar-value" id="kmTodayValue">0 км</div></div><div class="compare-row"><div class="compare-label">Вчера</div><div class="bar-track"><div class="bar-fill yesterday" id="kmYesterdayBar"></div></div><div class="bar-value" id="kmYesterdayValue">0 км</div></div></div><div class="compare-summary same" id="kmCompareSummary">ℹ️ Пока нет данных для сравнения.</div></div>
+  <div class="chart-card"><div class="chart-heading"><div><span class="chart-icon">💰</span>Доход: сегодня и вчера</div></div><div class="chart-subtitle">Сравнение заработка по завершённым рейсам</div><div class="compare-bars"><div class="compare-row"><div class="compare-label">Сегодня</div><div class="bar-track"><div class="bar-fill" id="moneyTodayBar"></div></div><div class="bar-value" id="moneyTodayValue">€0</div></div><div class="compare-row"><div class="compare-label">Вчера</div><div class="bar-track"><div class="bar-fill yesterday" id="moneyYesterdayBar"></div></div><div class="bar-value" id="moneyYesterdayValue">€0</div></div></div><div class="compare-summary same" id="moneyCompareSummary">ℹ️ Пока нет данных для сравнения.</div></div>
+  </section>
 
-  <section class="card"><div class="section-title">Личные данные</div>
+  <section class="card"><button class="edit-toggle" type="button" id="editToggle" aria-expanded="false" aria-controls="editBody"><span><span class="section-icon">👤</span>Личные данные</span><span class="toggle-icon">⌄</span></button><div class="notice" id="editHint" style="margin-top:9px">Данные скрыты для компактности. Нажми, чтобы изменить профиль.</div><div class="edit-body" id="editBody" hidden>
     <form id="profileForm">
       <label for="firstName">Имя</label><input id="firstName" autocomplete="given-name" placeholder="Например, Данил">
       <label for="lastName">Фамилия</label><input id="lastName" autocomplete="family-name" placeholder="Фамилия">
@@ -40,11 +44,11 @@
       <div class="actions"><button type="submit">Сохранить профиль</button><button type="button" class="secondary" id="resetForm">Отменить изменения</button></div>
       <div id="message" role="status" aria-live="polite"></div>
     </form>
-  </section>
+  </div></section>
 
-  <section class="card"><div class="section-title">Последние завершённые рейсы</div><div id="recentTrips" class="empty">Пока нет завершённых рейсов.</div></section>
-  <section class="card"><div class="section-title">Достижения</div><div id="achievements"></div></section>
-  <section class="card"><div class="section-title">Резервная копия профиля</div><div class="notice">Экспортируй данные, чтобы сохранить копию. Импорт заменит только данные профиля, не удаляя рейсы и банковские операции.</div><div class="actions"><button type="button" id="exportBtn">Экспорт профиля JSON</button><button type="button" class="secondary" id="importBtn">Импорт профиля JSON</button><input type="file" id="importFile" accept="application/json,.json" hidden></div><div id="backupMessage" class="notice" aria-live="polite"></div></section>
+  <section class="card"><div class="section-title"><span class="section-icon">📦</span>Последние завершённые рейсы</div><div id="recentTrips" class="empty">Пока нет завершённых рейсов.</div></section>
+  <section class="card"><div class="section-title"><span class="section-icon">🏆</span>Достижения</div><div id="achievements"></div></section>
+  <section class="card"><div class="section-title"><span class="section-icon">💾</span>Резервная копия профиля</div><div class="notice">Экспортируй данные, чтобы сохранить копию. Импорт заменит только данные профиля, не удаляя рейсы и банковские операции.</div><div class="actions"><button type="button" id="exportBtn">Экспорт профиля JSON</button><button type="button" class="secondary" id="importBtn">Импорт профиля JSON</button><input type="file" id="importFile" accept="application/json,.json" hidden></div><div id="backupMessage" class="notice" aria-live="polite"></div></section>
 </div>
 <script>
 (function(){
@@ -81,12 +85,39 @@
   function completedTrips(){return getTrips().filter(t=>{const s=String(t.status||t.state||'').toLowerCase();return ['completed','complete','done','завершён','завершен','завершённый','завершенный'].includes(s)||t.completed===true;});}
   function tripDistance(t){return Number(t.distance??t.km??t.kilometers??t.routeDistance??0)||0;}
   function tripEarnings(t){return Number(t.earnings??t.reward??t.payment??t.price??t.income??0)||0;}
+  function tripDate(t){
+    const raw=t.completedAt??t.completed_at??t.finishedAt??t.finished_at??t.completionDate??t.completedDate??t.dateCompleted??t.date??t.createdAt??t.created_at??t.timestamp??t.endDate??t.deliveryDate??'';
+    if(!raw)return null;
+    let d;
+    if(typeof raw==='number') d=new Date(raw<1e12?raw*1000:raw); else d=new Date(raw);
+    return Number.isNaN(d.getTime())?null:d;
+  }
+  function dayKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function dailyTotals(){
+    const now=new Date();const todayKey=dayKey(now);const yesterday=new Date(now);yesterday.setDate(yesterday.getDate()-1);const yesterdayKey=dayKey(yesterday);
+    const result={kmToday:0,kmYesterday:0,moneyToday:0,moneyYesterday:0,hasDates:false};
+    completedTrips().forEach(t=>{const d=tripDate(t);if(!d)return;const k=dayKey(d);if(k===todayKey){result.kmToday+=tripDistance(t);result.moneyToday+=tripEarnings(t);result.hasDates=true;}else if(k===yesterdayKey){result.kmYesterday+=tripDistance(t);result.moneyYesterday+=tripEarnings(t);result.hasDates=true;}});
+    return result;
+  }
+  function setComparison(prefix,today,yesterday,unit,hasDates){
+    const max=Math.max(today,yesterday,1);
+    $(prefix+'TodayBar').style.width=(today/max*100)+'%';
+    $(prefix+'YesterdayBar').style.width=(yesterday/max*100)+'%';
+    $(prefix+'TodayValue').textContent=(unit==='€'?'€':'')+fmtNumber(today)+(unit===' км'?' км':'');
+    $(prefix+'YesterdayValue').textContent=(unit==='€'?'€':'')+fmtNumber(yesterday)+(unit===' км'?' км':'');
+    const summary=$(prefix+'CompareSummary');summary.className='compare-summary';
+    if(!hasDates){summary.classList.add('same');summary.textContent='ℹ️ Нет рейсов с датой за сегодня или вчера.';return;}
+    if(today>yesterday){summary.classList.add('up');summary.textContent='↗️ Сегодня больше на '+fmtNumber(today-yesterday)+(unit==='€'?' €':' км')+'.';}
+    else if(today<yesterday){summary.classList.add('down');summary.textContent='↘️ Сегодня меньше на '+fmtNumber(yesterday-today)+(unit==='€'?' €':' км')+'.';}
+    else{summary.classList.add('same');summary.textContent='＝ Сегодня и вчера одинаковый результат.';}
+  }
   function render(){
     const fullName=profile.displayName||[profile.firstName,profile.lastName].filter(Boolean).join(' ')||'Новый водитель';
     $('heroName').textContent=fullName;
     $('avatar').textContent=(fullName.trim()[0]||'V').toUpperCase();
     $('heroMeta').textContent=[profile.company||'Компания не указана',profile.position||'Водитель',profile.country].filter(Boolean).join(' · ');
     $('experienceView').textContent=profile.experience||'Не указан';
+    $('heroExperience').textContent=profile.experience||'Не указан';
     const done=completedTrips();
     const km=done.reduce((sum,t)=>sum+tripDistance(t),0);
     const income=done.reduce((sum,t)=>sum+tripEarnings(t),0);
@@ -94,7 +125,10 @@
     $('distance').textContent=fmtNumber(km)+' км';
     $('earnings').textContent='€'+fmtNumber(income);
     const rating=Math.min(5,Math.max(0,done.length?Math.round((3+Math.min(done.length,20)*0.1)*10)/10:0));
-    $('rating').textContent='★ Рейтинг: '+rating.toFixed(1);
+    $('heroRating').textContent=rating.toFixed(1)+' / 5';
+    const daily=dailyTotals();
+    setComparison('km',daily.kmToday,daily.kmYesterday,' км',daily.hasDates);
+    setComparison('money',daily.moneyToday,daily.moneyYesterday,'€',daily.hasDates);
     const recent=done.slice().reverse().slice(0,3);
     $('recentTrips').innerHTML='';
     if(!recent.length){$('recentTrips').textContent='Пока нет завершённых рейсов.';$('recentTrips').className='empty';}
@@ -102,6 +136,7 @@
     const items=[['🚛','Первый рейс','Заверши свой первый рейс',done.length>=1],['🛣️','1000 километров','Проедь суммарно 1000 км',km>=1000],['💶','Первый доход','Получи доход за рейс',income>0],['🏆','10 рейсов','Заверши 10 рейсов',done.length>=10]];
     $('achievements').innerHTML='';items.forEach(a=>{const row=document.createElement('div');row.className='achievement';const medal=document.createElement('div');medal.className='medal';medal.textContent=a[0];const info=document.createElement('div');const title=document.createElement('div');title.className='achievement-title';title.textContent=(a[3]?'✓ ':'🔒 ')+a[1];const desc=document.createElement('div');desc.className='achievement-desc';desc.textContent=a[2];info.append(title,desc);row.append(medal,info);$('achievements').append(row);});
   }
+  $('editToggle').addEventListener('click',()=>{const open=$('editToggle').getAttribute('aria-expanded')!=='true';$('editToggle').setAttribute('aria-expanded',String(open));$('editBody').hidden=!open;$('editHint').textContent=open?'Измени нужные поля и нажми «Сохранить профиль».':'Данные скрыты для компактности. Нажми, чтобы изменить профиль.';});
   $('profileForm').addEventListener('submit',e=>{e.preventDefault();saveProfile(true);});
   $('resetForm').addEventListener('click',()=>{profile=readProfile();fillForm();$('message').textContent='Изменения отменены.';});
   $('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(profile,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='vts-profile.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);$('backupMessage').textContent='Резервная копия профиля подготовлена.';});
